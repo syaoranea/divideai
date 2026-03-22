@@ -1,0 +1,112 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/divideai/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           String         @id @default(cuid())
+  nome         String
+  email        String         @unique
+  senhaHash    String         @map("senha_hash")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  grupos       Grupo[]        @relation("OrganizadorGrupos")
+  participacoes Participante[]
+
+  @@map("usuarios")
+}
+
+model Grupo {
+  id                      String            @id @default(cuid())
+  nome                    String
+  dataEvento              DateTime          @map("data_evento")
+  organizadorId           String            @map("organizador_id")
+  organizador             Usuario           @relation("OrganizadorGrupos", fields: [organizadorId], references: [id])
+  orcamentoMaximoPorPessoa Float            @map("orcamento_maximo_por_pessoa")
+  statusGrupo             StatusGrupo       @default(ABERTO) @map("status_grupo")
+  imovelEscolhidoId       String?           @map("imovel_escolhido_id")
+  imovelEscolhido         Imovel?           @relation("ImovelEscolhido", fields: [imovelEscolhidoId], references: [id])
+  createdAt               DateTime          @default(now()) @map("created_at")
+  participantes           Participante[]
+  imoveisEmVotacao        ImovelEmVotacao[]
+  votos                   Voto[]
+
+  @@map("grupos")
+}
+
+model Participante {
+  id                    String              @id @default(cuid())
+  grupoId               String              @map("grupo_id")
+  grupo                 Grupo               @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  usuarioId             String?             @map("usuario_id")
+  usuario               Usuario?            @relation(fields: [usuarioId], references: [id])
+  nomeParticipante      String              @map("nome_participante")
+  emailParticipante     String              @default("") @map("email_participante")
+  telefoneParticipante  String              @default("") @map("telefone_participante")
+  statusParticipacao    StatusParticipacao  @default(PENDENTE) @map("status_participacao")
+  valorIndividual       Float?              @map("valor_individual")
+  valorPago             Float               @default(0) @map("valor_pago")
+  createdAt             DateTime            @default(now()) @map("created_at")
+  votos                 Voto[]
+
+  @@map("participantes")
+}
+
+model Imovel {
+  id                String            @id @default(cuid())
+  nome              String
+  descricao         String
+  precoTotalDiaria  Float             @map("preco_total_diaria")
+  capacidadeMaxima  Int               @map("capacidade_maxima")
+  comodidades       String            // JSON string
+  imagemUrl         String            @map("imagem_url")
+  linkReserva       String            @map("link_reserva")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  gruposEscolhidos  Grupo[]           @relation("ImovelEscolhido")
+  imoveisEmVotacao  ImovelEmVotacao[]
+  votos             Voto[]
+
+  @@map("imoveis")
+}
+
+model ImovelEmVotacao {
+  id        String   @id @default(cuid())
+  grupoId   String   @map("grupo_id")
+  grupo     Grupo    @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  imovelId  String   @map("imovel_id")
+  imovel    Imovel   @relation(fields: [imovelId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([grupoId, imovelId])
+  @@map("imoveis_em_votacao")
+}
+
+model Voto {
+  id             String       @id @default(cuid())
+  grupoId        String       @map("grupo_id")
+  grupo          Grupo        @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  participanteId String       @map("participante_id")
+  participante   Participante @relation(fields: [participanteId], references: [id], onDelete: Cascade)
+  imovelId       String       @map("imovel_id")
+  imovel         Imovel       @relation(fields: [imovelId], references: [id])
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@unique([grupoId, participanteId])
+  @@map("votos")
+}
+
+enum StatusGrupo {
+  ABERTO
+  FECHADO
+}
+
+enum StatusParticipacao {
+  CONFIRMADO
+  PENDENTE
+  RECUSADO
+}
