@@ -19,7 +19,7 @@ export const votingService = {
   // Methods for VotingProperty (ImovelEmVotacao)
   async getVotingPropertiesByGroupId(groupId: string): Promise<VotingProperty[]> {
     const snapshot = await db.collection('voting_properties').where('grupoId', '==', groupId).get();
-    return snapshot.docs.map(doc => {
+    return snapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -45,7 +45,7 @@ export const votingService = {
   // Methods for Votes
   async getVotesByGroupId(groupId: string): Promise<Vote[]> {
     const snapshot = await db.collection('votes').where('grupoId', '==', groupId).get();
-    return snapshot.docs.map(doc => {
+    return snapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,

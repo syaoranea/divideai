@@ -18,7 +18,7 @@ export interface Property {
 export const propertyService = {
   async getAllProperties(): Promise<Property[]> {
     const snapshot = await db.collection('properties').get();
-    return snapshot.docs.map(doc => {
+    return snapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,

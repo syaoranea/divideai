@@ -85,7 +85,7 @@ export async function DELETE(
       .get();
     
     const batch = db.batch();
-    snapshot.docs.forEach(doc => batch.delete(doc.ref));
+    snapshot.docs.forEach((doc: any) => batch.delete(doc.ref));
     await batch.commit();
 
     return NextResponse.json({ success: true });

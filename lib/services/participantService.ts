@@ -22,7 +22,7 @@ export interface Participant {
 export const participantService = {
   async getParticipantsByGroupId(groupId: string): Promise<Participant[]> {
     const snapshot = await db.collection('participants').where('grupoId', '==', groupId).get();
-    return snapshot.docs.map(doc => {
+    return snapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -58,12 +58,12 @@ export const participantService = {
     const groupData = groupDoc.data()!;
 
     const participantsSnapshot = await db.collection('participants').where('grupoId', '==', groupId).get();
-    const participants = participantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Participant));
-    const confirmados = participants.filter(p => p.statusParticipacao === StatusParticipacao.CONFIRMADO);
+    const participants = participantsSnapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() } as Participant));
+    const confirmados = participants.filter((p: any) => p.statusParticipacao === StatusParticipacao.CONFIRMADO);
     
     if (confirmados.length === 0) {
       const batch = db.batch();
-      participants.forEach(p => batch.update(db.collection('participants').doc(p.id), { valorIndividual: null }));
+      participants.forEach((p: any) => batch.update(db.collection('participants').doc(p.id), { valorIndividual: null }));
       await batch.commit();
       return;
     }
@@ -79,7 +79,7 @@ export const participantService = {
     const valorIndividual = valorBase / confirmados.length;
     const batch = db.batch();
     
-    participants.forEach(p => {
+    participants.forEach((p: any) => {
       const pRef = db.collection('participants').doc(p.id);
       if (p.statusParticipacao === StatusParticipacao.CONFIRMADO) {
         batch.update(pRef, { valorIndividual });
