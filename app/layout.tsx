@@ -15,16 +15,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = `${protocol}://${host}`;
 
   return {
-    title: 'DivideAí - Divida custos de aluguel com amigos',
-    description: 'Aplicação para dividir custos de aluguel de imóveis de lazer entre amigos de forma simples e justa.',
+    title: 'Natal 2026 - União e Confraternização',
+    description: 'Organizando momentos inesquecíveis de união e confraternização em família.',
     metadataBase: new URL(baseUrl),
     icons: {
       icon: '/favicon.svg',
       shortcut: '/favicon.svg',
     },
     openGraph: {
-      title: 'DivideAí - Divida custos de aluguel com amigos',
-      description: 'Aplicação para dividir custos de aluguel de imóveis de lazer entre amigos de forma simples e justa.',
+      title: 'Natal 2026 - União e Confraternização',
+      description: 'Organizando momentos inesquecíveis de união e confraternização em família.',
       images: ['/og-image.png'],
     },
   };

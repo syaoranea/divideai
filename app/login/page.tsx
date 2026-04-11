@@ -64,8 +64,8 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg mb-4">
             <Users size={40} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-emerald-800">DivideAí</h1>
-          <p className="text-gray-600 mt-2">Divida custos de aluguel com amigos</p>
+          <h1 className="text-3xl font-bold text-emerald-800">Natal 2026</h1>
+          <p className="text-gray-600 mt-2">Celebrando a união e confraternização em família</p>
         </div>
 
         <div className="glass-card rounded-2xl p-8 shadow-xl">

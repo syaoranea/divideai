@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { userService } from './services/userService';
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: 'credentials',
