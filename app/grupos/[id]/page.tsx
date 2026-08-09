@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import { Header } from '@/components/header';
@@ -13,10 +13,12 @@ import { EditGroupModal } from '@/components/edit-group-modal';
 import { EditPropertyModal } from '@/components/edit-property-modal';
 import { GuestAccessModal } from '@/components/guest-access-modal';
 import { CollectionChart } from '@/components/collection-chart';
+import { PaymentHistoryTable, type Pagamento } from '@/components/payment-history-table';
+import { AddPaymentModal } from '@/components/add-payment-modal';
 import {
   ArrowLeft, Users, Calendar, DollarSign, Plus, Building2, Vote,
   CheckCircle, AlertCircle, ExternalLink, Trophy, Lock, ChevronRight, Pencil,
-  Utensils, Map
+  Utensils, Map, History
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -73,9 +75,11 @@ export default function GrupoDetailsPage() {
 
   const [grupo, setGrupo] = useState<Grupo | null>(null);
   const [imoveis, setImoveis] = useState<Imovel[]>([]);
+  const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activePhase, setActivePhase] = useState<'A' | 'B' | 'C' | 'D'>('A');
+  const [activePhase, setActivePhase] = useState<'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'>('A');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showEditGroupModal, setShowEditGroupModal] = useState(false);
   const [editingParticipant, setEditingParticipant] = useState<Participante | null>(null);
@@ -84,6 +88,8 @@ export default function GrupoDetailsPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [guestPhone, setGuestPhone] = useState<string | null>(null);
   const [showGuestModal, setShowGuestModal] = useState(false);
+  // Evita que um refetch jogue o usuário de volta para a fase inicial
+  const phaseInitialized = useRef(false);
 
   const userId = (session?.user as any)?.id;
   const userEmail = session?.user?.email;
@@ -122,15 +128,19 @@ export default function GrupoDetailsPage() {
       
       setGrupo(data);
 
-      // Determine active phase
+      // Determine active phase (apenas no primeiro carregamento, exceto quando o grupo é fechado)
       if (data?.statusGrupo === 'FECHADO') {
         setActivePhase('D');
-      } else if ((data?.imoveisEmVotacao?.length ?? 0) > 0) {
-        setActivePhase('C');
-      } else if (numConfirmados >= 2) {
-        setActivePhase('B');
-      } else {
-        setActivePhase('A');
+        phaseInitialized.current = true;
+      } else if (!phaseInitialized.current) {
+        if ((data?.imoveisEmVotacao?.length ?? 0) > 0) {
+          setActivePhase('C');
+        } else if (numConfirmados >= 2) {
+          setActivePhase('B');
+        } else {
+          setActivePhase('A');
+        }
+        phaseInitialized.current = true;
       }
     } catch (error) {
       console.error('Error fetching grupo:', error);
@@ -151,6 +161,23 @@ export default function GrupoDetailsPage() {
       console.error('Error fetching imoveis:', error);
     }
   }, [orcamentoTotal, numConfirmados]);
+
+  const fetchPagamentos = useCallback(async () => {
+    try {
+      const headers: Record<string, string> = {};
+      if (guestPhone) {
+        headers['x-guest-phone'] = guestPhone;
+      }
+
+      const res = await fetch(`/api/grupos/${grupoId}/pagamentos`, { headers });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      setPagamentos(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching pagamentos:', error);
+    }
+  }, [grupoId, guestPhone]);
 
   useEffect(() => {
     // Carrega telefone de convidado se existir
@@ -178,6 +205,12 @@ export default function GrupoDetailsPage() {
       fetchGrupo();
     }
   }, [authStatus, guestPhone, grupoId, fetchGrupo]);
+
+  useEffect(() => {
+    if ((authStatus === 'authenticated' || guestPhone) && grupoId) {
+      fetchPagamentos();
+    }
+  }, [authStatus, guestPhone, grupoId, fetchPagamentos]);
 
   useEffect(() => {
     if (grupo && activePhase === 'B') {
@@ -269,6 +302,36 @@ export default function GrupoDetailsPage() {
   const openEditModal = (p: Participante) => {
     setEditingParticipant(p);
     setShowEditModal(true);
+  };
+
+  const handleAddPayment = async (data: {
+    participanteId: string;
+    valor: number;
+    dataPagamento: string;
+    observacao: string;
+  }) => {
+    const res = await fetch(`/api/grupos/${grupoId}/pagamentos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err?.error ?? 'Erro ao registrar pagamento');
+    }
+    await Promise.all([fetchPagamentos(), fetchGrupo()]);
+  };
+
+  const handleDeletePayment = async (pagamentoId: string) => {
+    const res = await fetch(`/api/grupos/${grupoId}/pagamentos/${pagamentoId}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err?.error ?? 'Erro ao excluir pagamento');
+      return;
+    }
+    await Promise.all([fetchPagamentos(), fetchGrupo()]);
   };
 
   // Collection chart data
@@ -521,6 +584,7 @@ export default function GrupoDetailsPage() {
               { key: 'C', label: 'Votação', icon: Vote, disabled: selectedImovelIds?.length === 0 },
               { key: 'E', label: 'Refeição', icon: Utensils, disabled: true },
               { key: 'F', label: 'Atividades', icon: Map, disabled: true },
+              { key: 'G', label: 'Histórico', icon: History },
             ].map((phase) => (
               <button
                 key={phase.key}
@@ -728,6 +792,23 @@ export default function GrupoDetailsPage() {
           </motion.div>
         )}
 
+        {/* Phase G: Payment History */}
+        {activePhase === 'G' && (
+          <PaymentHistoryTable
+            participantes={(grupo?.participantes ?? []).map((p) => ({
+              id: p.id,
+              nomeParticipante: p.nomeParticipante,
+              statusParticipacao: p.statusParticipacao,
+              valorIndividual: p.valorIndividual,
+              valorPago: p.valorPago ?? 0,
+            }))}
+            pagamentos={pagamentos}
+            isOrganizer={isOrganizer}
+            onAddPayment={() => setShowAddPaymentModal(true)}
+            onDeletePayment={handleDeletePayment}
+          />
+        )}
+
         {/* Phase D: Final Results */}
         {(activePhase === 'D' || grupo?.statusGrupo === 'FECHADO') && grupo?.imovelEscolhido && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -864,6 +945,16 @@ export default function GrupoDetailsPage() {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddParticipant}
+      />
+
+      <AddPaymentModal
+        isOpen={showAddPaymentModal}
+        onClose={() => setShowAddPaymentModal(false)}
+        onSave={handleAddPayment}
+        participantes={(grupo?.participantes ?? []).map((p) => ({
+          id: p.id,
+          nomeParticipante: p.nomeParticipante,
+        }))}
       />
 
       <EditParticipantModal

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { participantService, StatusParticipacao } from '@/lib/services/participantService';
+import { paymentService } from '@/lib/services/paymentService';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,6 +67,8 @@ export async function DELETE(
     if (!session?.user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
+
+    await paymentService.deletePaymentsByParticipant(params.participanteId);
 
     await participantService.deleteParticipant(params.participanteId);
 
