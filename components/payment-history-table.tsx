@@ -88,8 +88,10 @@ export function PaymentHistoryTable({
   }, [anoPadrao, ano, anosComPagamento]);
 
   const linhas = useMemo(() => {
-    // valores[participanteId][mes] para o ano selecionado
-    const porParticipante: Record<string, { meses: Record<number, number>; outrosAnos: number }> = {};
+    const porParticipante: Record<
+      string,
+      { meses: Record<number, number>; anosAnteriores: number; anosSeguintes: number }
+    > = {};
 
     for (const p of pagamentos ?? []) {
       if (!p?.participanteId) continue;
@@ -98,31 +100,46 @@ export function PaymentHistoryTable({
 
       porParticipante[p.participanteId] = porParticipante[p.participanteId] ?? {
         meses: {},
-        outrosAnos: 0,
+        anosAnteriores: 0,
+        anosSeguintes: 0,
       };
       const alvo = porParticipante[p.participanteId];
 
       if (parsed.ano === ano) {
         alvo.meses[parsed.mes] = (alvo.meses[parsed.mes] ?? 0) + (p.valor ?? 0);
+      } else if (parsed.ano < ano) {
+        alvo.anosAnteriores += p.valor ?? 0;
       } else {
-        alvo.outrosAnos += p.valor ?? 0;
+        alvo.anosSeguintes += p.valor ?? 0;
       }
     }
 
     return (participantes ?? []).map((p) => {
-      const dados = porParticipante[p.id] ?? { meses: {}, outrosAnos: 0 };
-      const totalLancado =
-        Object.values(dados.meses).reduce((s, v) => s + v, 0) + dados.outrosAnos;
+      const dados = porParticipante[p.id] ?? { meses: {}, anosAnteriores: 0, anosSeguintes: 0 };
+      const totalDoAno = Object.values(dados.meses).reduce((s, v) => s + v, 0);
+      const totalLancado = totalDoAno + dados.anosAnteriores + dados.anosSeguintes;
       // Valores registrados direto no cadastro, sem mês de competência
-      const anterior = Math.max((p.valorPago ?? 0) - totalLancado, 0);
-      const totalPago = totalLancado + anterior;
+      const semCompetencia = Math.max((p.valorPago ?? 0) - totalLancado, 0);
+      const saldoInicial = semCompetencia + dados.anosAnteriores;
+
+      // Cada mês mostra o total pago até ali, partindo do saldo inicial
+      const acumulado: Record<number, number> = {};
+      let corrente = saldoInicial;
+      for (const mes of MESES_DO_ANO) {
+        corrente += dados.meses[mes] ?? 0;
+        acumulado[mes] = corrente;
+      }
+
+      const totalPago = corrente + dados.anosSeguintes;
       const devido = p.valorIndividual ?? 0;
 
       return {
         ...p,
         meses: dados.meses,
-        outrosAnos: dados.outrosAnos,
-        anterior,
+        acumulado,
+        saldoInicial,
+        anosSeguintes: dados.anosSeguintes,
+        totalDoAno,
         totalPago,
         devido,
         saldo: devido - totalPago,
@@ -130,22 +147,27 @@ export function PaymentHistoryTable({
     });
   }, [participantes, pagamentos, ano]);
 
-  const temAnterior = linhas.some((l) => l.anterior > 0);
-  const temOutrosAnos = linhas.some((l) => l.outrosAnos > 0);
+  const temSaldoInicial = linhas.some((l) => l.saldoInicial > 0);
+  const temAnosSeguintes = linhas.some((l) => l.anosSeguintes > 0);
 
-  const totaisPorMes = useMemo(() => {
-    const totais: Record<number, number> = {};
-    for (const mes of MESES_DO_ANO) {
-      totais[mes] = linhas.reduce((s, l) => s + (l.meses[mes] ?? 0), 0);
-    }
-    return totais;
-  }, [linhas]);
-
-  const totalAnterior = linhas.reduce((s, l) => s + l.anterior, 0);
-  const totalOutrosAnos = linhas.reduce((s, l) => s + l.outrosAnos, 0);
+  const totalSaldoInicial = linhas.reduce((s, l) => s + l.saldoInicial, 0);
+  const totalAnosSeguintes = linhas.reduce((s, l) => s + l.anosSeguintes, 0);
   const totalPagoGeral = linhas.reduce((s, l) => s + l.totalPago, 0);
   const totalDevidoGeral = linhas.reduce((s, l) => s + l.devido, 0);
-  const totalAnoSelecionado = MESES_DO_ANO.reduce((s, mes) => s + (totaisPorMes[mes] ?? 0), 0);
+  const totalAnoSelecionado = linhas.reduce((s, l) => s + l.totalDoAno, 0);
+
+  /** Rodapé: acumulado do grupo mês a mês e quanto entrou em cada mês */
+  const totaisPorMes = useMemo(() => {
+    const noMes: Record<number, number> = {};
+    const acumulado: Record<number, number> = {};
+    let corrente = totalSaldoInicial;
+    for (const mes of MESES_DO_ANO) {
+      noMes[mes] = linhas.reduce((s, l) => s + (l.meses[mes] ?? 0), 0);
+      corrente += noMes[mes];
+      acumulado[mes] = corrente;
+    }
+    return { noMes, acumulado };
+  }, [linhas, totalSaldoInicial]);
 
   const nomePorParticipante = useMemo(() => {
     const mapa: Record<string, string> = {};
@@ -222,16 +244,16 @@ export function PaymentHistoryTable({
                     <th className="text-left font-semibold px-4 py-3 whitespace-nowrap sticky left-0 bg-gray-50 border-r border-gray-200">
                       Participante
                     </th>
-                    {temAnterior && (
-                      <th className={`${celulaMes} font-semibold`}>Anterior</th>
+                    {temSaldoInicial && (
+                      <th className={`${celulaMes} font-semibold`}>Saldo inicial</th>
                     )}
                     {MESES_DO_ANO.map((mes) => (
                       <th key={mes} className={`${celulaMes} font-semibold`}>
                         {MESES[mes - 1]}
                       </th>
                     ))}
-                    {temOutrosAnos && (
-                      <th className={`${celulaMes} font-semibold`}>Outros anos</th>
+                    {temAnosSeguintes && (
+                      <th className={`${celulaMes} font-semibold`}>Anos seguintes</th>
                     )}
                     <th className="text-right font-semibold px-4 py-3 whitespace-nowrap border-l border-gray-200">
                       Total pago
@@ -253,27 +275,37 @@ export function PaymentHistoryTable({
                           </span>
                         )}
                       </td>
-                      {temAnterior && (
+                      {temSaldoInicial && (
                         <td className={`${celulaMes} text-gray-500`}>
-                          {linha.anterior > 0 ? num(linha.anterior) : '—'}
+                          {linha.saldoInicial > 0 ? num(linha.saldoInicial) : '—'}
                         </td>
                       )}
                       {MESES_DO_ANO.map((mes) => {
-                        const valor = linha.meses[mes] ?? 0;
+                        const noMes = linha.meses[mes] ?? 0;
+                        const acumulado = linha.acumulado[mes] ?? 0;
                         return (
                           <td
                             key={mes}
+                            title={
+                              noMes > 0
+                                ? `Pagou ${brl(noMes)} em ${MESES[mes - 1]}/${ano}`
+                                : `Nada pago em ${MESES[mes - 1]}/${ano}`
+                            }
                             className={`${celulaMes} ${
-                              valor > 0 ? 'text-emerald-600 font-medium' : 'text-gray-300'
+                              acumulado <= 0
+                                ? 'text-gray-300'
+                                : noMes > 0
+                                ? 'text-emerald-600 font-semibold'
+                                : 'text-gray-400'
                             }`}
                           >
-                            {valor > 0 ? num(valor) : '—'}
+                            {acumulado > 0 ? num(acumulado) : '—'}
                           </td>
                         );
                       })}
-                      {temOutrosAnos && (
+                      {temAnosSeguintes && (
                         <td className={`${celulaMes} text-gray-500`}>
-                          {linha.outrosAnos > 0 ? num(linha.outrosAnos) : '—'}
+                          {linha.anosSeguintes > 0 ? num(linha.anosSeguintes) : '—'}
                         </td>
                       )}
                       <td className="px-4 py-3 text-right font-bold text-emerald-600 whitespace-nowrap border-l border-gray-200">
@@ -299,13 +331,23 @@ export function PaymentHistoryTable({
                     <td className="px-4 py-3 sticky left-0 bg-gray-50 border-r border-gray-200">
                       Total
                     </td>
-                    {temAnterior && <td className={celulaMes}>{num(totalAnterior)}</td>}
-                    {MESES_DO_ANO.map((mes) => (
-                      <td key={mes} className={celulaMes}>
-                        {(totaisPorMes[mes] ?? 0) > 0 ? num(totaisPorMes[mes]) : '—'}
-                      </td>
-                    ))}
-                    {temOutrosAnos && <td className={celulaMes}>{num(totalOutrosAnos)}</td>}
+                    {temSaldoInicial && <td className={celulaMes}>{num(totalSaldoInicial)}</td>}
+                    {MESES_DO_ANO.map((mes) => {
+                      const acumulado = totaisPorMes.acumulado[mes] ?? 0;
+                      const noMes = totaisPorMes.noMes[mes] ?? 0;
+                      return (
+                        <td
+                          key={mes}
+                          title={`Entrou ${brl(noMes)} em ${MESES[mes - 1]}/${ano}`}
+                          className={`${celulaMes} ${
+                            acumulado <= 0 ? 'text-gray-300' : noMes > 0 ? '' : 'text-gray-400'
+                          }`}
+                        >
+                          {acumulado > 0 ? num(acumulado) : '—'}
+                        </td>
+                      );
+                    })}
+                    {temAnosSeguintes && <td className={celulaMes}>{num(totalAnosSeguintes)}</td>}
                     <td className="px-4 py-3 text-right text-emerald-700 whitespace-nowrap border-l border-gray-200">
                       {brl(totalPagoGeral)}
                     </td>
@@ -322,17 +364,20 @@ export function PaymentHistoryTable({
               </table>
             </div>
 
-            <div className="px-4 py-3 border-t border-gray-100 text-xs text-gray-500 flex flex-wrap gap-x-4 gap-y-1">
-              <span>
-                Valores dos meses em R$. Arrecadado em {ano}:{' '}
+            <div className="px-4 py-3 border-t border-gray-100 text-xs text-gray-500 space-y-1">
+              <p className="flex items-center gap-1">
+                <Info size={13} className="flex-shrink-0" />
+                Cada mês mostra o <strong className="font-medium">total acumulado</strong> pago até
+                ali, em R$. Em <span className="text-emerald-600 font-semibold">verde</span> os meses
+                com pagamento; em cinza o valor apenas se repete. Arrecadado em {ano}:{' '}
                 <strong className="font-medium text-gray-700">{brl(totalAnoSelecionado)}</strong>
-              </span>
-              {temAnterior && (
-                <span className="flex items-center gap-1">
-                  <Info size={13} />
-                  <strong className="font-medium">Anterior</strong>: valores informados direto no
-                  cadastro do participante, sem mês de competência.
-                </span>
+              </p>
+              {temSaldoInicial && (
+                <p>
+                  <strong className="font-medium">Saldo inicial</strong>: o que já estava pago antes
+                  de janeiro de {ano} — valores informados direto no cadastro do participante e
+                  pagamentos de anos anteriores. Já está somado nas colunas dos meses.
+                </p>
               )}
             </div>
           </div>
