@@ -804,6 +804,11 @@ export default function GrupoDetailsPage() {
             }))}
             pagamentos={pagamentos}
             isOrganizer={isOrganizer}
+            anoReferencia={
+              grupo?.dataEvento
+                ? new Date(grupo.dataEvento).getUTCFullYear()
+                : undefined
+            }
             onAddPayment={() => setShowAddPaymentModal(true)}
             onDeletePayment={handleDeletePayment}
           />

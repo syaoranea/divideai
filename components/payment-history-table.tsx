@@ -26,16 +26,27 @@ interface PaymentHistoryTableProps {
   participantes: ParticipanteResumo[];
   pagamentos: Pagamento[];
   isOrganizer: boolean;
+  /** Ano exibido por padrão nas colunas de janeiro a dezembro */
+  anoReferencia?: number;
   onAddPayment?: () => void;
   onDeletePayment?: (pagamentoId: string) => Promise<void>;
 }
 
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-const formatCompetencia = (competencia: string) => {
+/** Janeiro a dezembro, sempre as 12 colunas */
+const MESES_DO_ANO = Array.from({ length: 12 }, (_, i) => i + 1);
+
+const parseCompetencia = (competencia: string) => {
   const [ano, mes] = (competencia ?? '').split('-').map(Number);
-  if (!ano || !mes || mes < 1 || mes > 12) return competencia;
-  return `${MESES[mes - 1]}/${String(ano).slice(2)}`;
+  if (!ano || !mes || mes < 1 || mes > 12) return null;
+  return { ano, mes };
+};
+
+const formatCompetencia = (competencia: string) => {
+  const parsed = parseCompetencia(competencia);
+  if (!parsed) return competencia;
+  return `${MESES[parsed.mes - 1]}/${String(parsed.ano).slice(2)}`;
 };
 
 const formatData = (iso: string) => {
@@ -44,41 +55,64 @@ const formatData = (iso: string) => {
   return new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(date);
 };
 
-const brl = (valor: number) => `R$ ${(valor ?? 0).toFixed(2)}`;
+const num = (valor: number) => (valor ?? 0).toFixed(2);
+const brl = (valor: number) => `R$ ${num(valor)}`;
 
 export function PaymentHistoryTable({
   participantes,
   pagamentos,
   isOrganizer,
+  anoReferencia,
   onAddPayment,
   onDeletePayment,
 }: PaymentHistoryTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const competencias = useMemo(() => {
-    const set = new Set<string>();
+  const anosComPagamento = useMemo(() => {
+    const set = new Set<number>();
     for (const p of pagamentos ?? []) {
-      if (p?.competencia) set.add(p.competencia);
+      const parsed = parseCompetencia(p?.competencia);
+      if (parsed) set.add(parsed.ano);
     }
     return Array.from(set).sort();
   }, [pagamentos]);
 
-  // valores[participanteId][competencia] = total pago no mês
-  const valores = useMemo(() => {
-    const mapa: Record<string, Record<string, number>> = {};
-    for (const p of pagamentos ?? []) {
-      if (!p?.participanteId || !p?.competencia) continue;
-      mapa[p.participanteId] = mapa[p.participanteId] ?? {};
-      mapa[p.participanteId][p.competencia] =
-        (mapa[p.participanteId][p.competencia] ?? 0) + (p.valor ?? 0);
-    }
-    return mapa;
-  }, [pagamentos]);
+  const anoPadrao =
+    anoReferencia ?? anosComPagamento[anosComPagamento.length - 1] ?? new Date().getFullYear();
+
+  const [ano, setAno] = useState(anoPadrao);
+
+  const anosDisponiveis = useMemo(() => {
+    const set = new Set<number>([anoPadrao, ano, ...anosComPagamento]);
+    return Array.from(set).sort();
+  }, [anoPadrao, ano, anosComPagamento]);
 
   const linhas = useMemo(() => {
+    // valores[participanteId][mes] para o ano selecionado
+    const porParticipante: Record<string, { meses: Record<number, number>; outrosAnos: number }> = {};
+
+    for (const p of pagamentos ?? []) {
+      if (!p?.participanteId) continue;
+      const parsed = parseCompetencia(p?.competencia);
+      if (!parsed) continue;
+
+      porParticipante[p.participanteId] = porParticipante[p.participanteId] ?? {
+        meses: {},
+        outrosAnos: 0,
+      };
+      const alvo = porParticipante[p.participanteId];
+
+      if (parsed.ano === ano) {
+        alvo.meses[parsed.mes] = (alvo.meses[parsed.mes] ?? 0) + (p.valor ?? 0);
+      } else {
+        alvo.outrosAnos += p.valor ?? 0;
+      }
+    }
+
     return (participantes ?? []).map((p) => {
-      const porMes = valores[p.id] ?? {};
-      const totalLancado = Object.values(porMes).reduce((s, v) => s + v, 0);
+      const dados = porParticipante[p.id] ?? { meses: {}, outrosAnos: 0 };
+      const totalLancado =
+        Object.values(dados.meses).reduce((s, v) => s + v, 0) + dados.outrosAnos;
       // Valores registrados direto no cadastro, sem mês de competência
       const anterior = Math.max((p.valorPago ?? 0) - totalLancado, 0);
       const totalPago = totalLancado + anterior;
@@ -86,28 +120,32 @@ export function PaymentHistoryTable({
 
       return {
         ...p,
-        porMes,
+        meses: dados.meses,
+        outrosAnos: dados.outrosAnos,
         anterior,
         totalPago,
         devido,
         saldo: devido - totalPago,
       };
     });
-  }, [participantes, valores]);
+  }, [participantes, pagamentos, ano]);
 
   const temAnterior = linhas.some((l) => l.anterior > 0);
+  const temOutrosAnos = linhas.some((l) => l.outrosAnos > 0);
 
   const totaisPorMes = useMemo(() => {
-    const totais: Record<string, number> = {};
-    for (const comp of competencias) {
-      totais[comp] = linhas.reduce((s, l) => s + (l.porMes[comp] ?? 0), 0);
+    const totais: Record<number, number> = {};
+    for (const mes of MESES_DO_ANO) {
+      totais[mes] = linhas.reduce((s, l) => s + (l.meses[mes] ?? 0), 0);
     }
     return totais;
-  }, [competencias, linhas]);
+  }, [linhas]);
 
   const totalAnterior = linhas.reduce((s, l) => s + l.anterior, 0);
+  const totalOutrosAnos = linhas.reduce((s, l) => s + l.outrosAnos, 0);
   const totalPagoGeral = linhas.reduce((s, l) => s + l.totalPago, 0);
   const totalDevidoGeral = linhas.reduce((s, l) => s + l.devido, 0);
+  const totalAnoSelecionado = MESES_DO_ANO.reduce((s, mes) => s + (totaisPorMes[mes] ?? 0), 0);
 
   const nomePorParticipante = useMemo(() => {
     const mapa: Record<string, string> = {};
@@ -116,7 +154,10 @@ export function PaymentHistoryTable({
   }, [participantes]);
 
   const lancamentos = useMemo(
-    () => [...(pagamentos ?? [])].sort((a, b) => (b.dataPagamento ?? '').localeCompare(a.dataPagamento ?? '')),
+    () =>
+      [...(pagamentos ?? [])].sort((a, b) =>
+        (b.dataPagamento ?? '').localeCompare(a.dataPagamento ?? '')
+      ),
     [pagamentos]
   );
 
@@ -131,22 +172,40 @@ export function PaymentHistoryTable({
     }
   };
 
+  const celulaMes = 'px-3 py-3 text-right whitespace-nowrap';
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
           <History className="text-emerald-600" />
           Histórico de Pagamentos
         </h2>
-        {isOrganizer && (
-          <button
-            onClick={() => onAddPayment?.()}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors"
-          >
-            <Plus size={18} />
-            Registrar pagamento
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {anosDisponiveis.length > 1 && (
+            <select
+              value={ano}
+              onChange={(e) => setAno(Number(e.target?.value) || anoPadrao)}
+              className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 font-medium focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+              aria-label="Ano do histórico"
+            >
+              {anosDisponiveis.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          )}
+          {isOrganizer && (
+            <button
+              onClick={() => onAddPayment?.()}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors"
+            >
+              <Plus size={18} />
+              Registrar pagamento
+            </button>
+          )}
+        </div>
       </div>
 
       {(participantes?.length ?? 0) === 0 ? (
@@ -160,26 +219,33 @@ export function PaymentHistoryTable({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 text-gray-600">
-                    <th className="text-left font-semibold px-4 py-3 whitespace-nowrap sticky left-0 bg-gray-50">
+                    <th className="text-left font-semibold px-4 py-3 whitespace-nowrap sticky left-0 bg-gray-50 border-r border-gray-200">
                       Participante
                     </th>
                     {temAnterior && (
-                      <th className="text-right font-semibold px-4 py-3 whitespace-nowrap">Anterior</th>
+                      <th className={`${celulaMes} font-semibold`}>Anterior</th>
                     )}
-                    {competencias.map((comp) => (
-                      <th key={comp} className="text-right font-semibold px-4 py-3 whitespace-nowrap">
-                        {formatCompetencia(comp)}
+                    {MESES_DO_ANO.map((mes) => (
+                      <th key={mes} className={`${celulaMes} font-semibold`}>
+                        {MESES[mes - 1]}
                       </th>
                     ))}
-                    <th className="text-right font-semibold px-4 py-3 whitespace-nowrap">Total pago</th>
-                    <th className="text-right font-semibold px-4 py-3 whitespace-nowrap">Valor devido</th>
+                    {temOutrosAnos && (
+                      <th className={`${celulaMes} font-semibold`}>Outros anos</th>
+                    )}
+                    <th className="text-right font-semibold px-4 py-3 whitespace-nowrap border-l border-gray-200">
+                      Total pago
+                    </th>
+                    <th className="text-right font-semibold px-4 py-3 whitespace-nowrap">
+                      Valor devido
+                    </th>
                     <th className="text-right font-semibold px-4 py-3 whitespace-nowrap">Saldo</th>
                   </tr>
                 </thead>
                 <tbody>
                   {linhas.map((linha) => (
                     <tr key={linha.id} className="border-t border-gray-100 hover:bg-emerald-50/40">
-                      <td className="px-4 py-3 sticky left-0 bg-white">
+                      <td className="px-4 py-3 sticky left-0 bg-white border-r border-gray-200">
                         <span className="font-medium text-gray-800">{linha.nomeParticipante}</span>
                         {linha.statusParticipacao !== 'CONFIRMADO' && (
                           <span className="ml-2 text-xs text-gray-400">
@@ -188,30 +254,35 @@ export function PaymentHistoryTable({
                         )}
                       </td>
                       {temAnterior && (
-                        <td className="px-4 py-3 text-right text-gray-500">
-                          {linha.anterior > 0 ? brl(linha.anterior) : '—'}
+                        <td className={`${celulaMes} text-gray-500`}>
+                          {linha.anterior > 0 ? num(linha.anterior) : '—'}
                         </td>
                       )}
-                      {competencias.map((comp) => {
-                        const valor = linha.porMes[comp] ?? 0;
+                      {MESES_DO_ANO.map((mes) => {
+                        const valor = linha.meses[mes] ?? 0;
                         return (
                           <td
-                            key={comp}
-                            className={`px-4 py-3 text-right ${
+                            key={mes}
+                            className={`${celulaMes} ${
                               valor > 0 ? 'text-emerald-600 font-medium' : 'text-gray-300'
                             }`}
                           >
-                            {valor > 0 ? brl(valor) : '—'}
+                            {valor > 0 ? num(valor) : '—'}
                           </td>
                         );
                       })}
-                      <td className="px-4 py-3 text-right font-bold text-emerald-600">
+                      {temOutrosAnos && (
+                        <td className={`${celulaMes} text-gray-500`}>
+                          {linha.outrosAnos > 0 ? num(linha.outrosAnos) : '—'}
+                        </td>
+                      )}
+                      <td className="px-4 py-3 text-right font-bold text-emerald-600 whitespace-nowrap border-l border-gray-200">
                         {brl(linha.totalPago)}
                       </td>
-                      <td className="px-4 py-3 text-right text-gray-700">
+                      <td className="px-4 py-3 text-right text-gray-700 whitespace-nowrap">
                         {linha.valorIndividual != null ? brl(linha.devido) : '—'}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
                         {linha.valorIndividual == null ? (
                           <span className="text-gray-300">—</span>
                         ) : linha.saldo <= 0 ? (
@@ -225,18 +296,23 @@ export function PaymentHistoryTable({
                 </tbody>
                 <tfoot>
                   <tr className="border-t-2 border-gray-200 bg-gray-50 font-semibold text-gray-700">
-                    <td className="px-4 py-3 sticky left-0 bg-gray-50">Total</td>
-                    {temAnterior && (
-                      <td className="px-4 py-3 text-right">{brl(totalAnterior)}</td>
-                    )}
-                    {competencias.map((comp) => (
-                      <td key={comp} className="px-4 py-3 text-right">
-                        {brl(totaisPorMes[comp] ?? 0)}
+                    <td className="px-4 py-3 sticky left-0 bg-gray-50 border-r border-gray-200">
+                      Total
+                    </td>
+                    {temAnterior && <td className={celulaMes}>{num(totalAnterior)}</td>}
+                    {MESES_DO_ANO.map((mes) => (
+                      <td key={mes} className={celulaMes}>
+                        {(totaisPorMes[mes] ?? 0) > 0 ? num(totaisPorMes[mes]) : '—'}
                       </td>
                     ))}
-                    <td className="px-4 py-3 text-right text-emerald-700">{brl(totalPagoGeral)}</td>
-                    <td className="px-4 py-3 text-right">{brl(totalDevidoGeral)}</td>
-                    <td className="px-4 py-3 text-right">
+                    {temOutrosAnos && <td className={celulaMes}>{num(totalOutrosAnos)}</td>}
+                    <td className="px-4 py-3 text-right text-emerald-700 whitespace-nowrap border-l border-gray-200">
+                      {brl(totalPagoGeral)}
+                    </td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      {brl(totalDevidoGeral)}
+                    </td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
                       {totalDevidoGeral - totalPagoGeral <= 0
                         ? 'Quitado ✓'
                         : brl(totalDevidoGeral - totalPagoGeral)}
@@ -246,21 +322,20 @@ export function PaymentHistoryTable({
               </table>
             </div>
 
-            {competencias.length === 0 && (
-              <div className="px-4 py-6 text-center text-gray-500 border-t border-gray-100">
-                Nenhum pagamento lançado por mês ainda.
-                {isOrganizer && ' Use "Registrar pagamento" para começar o histórico mensal.'}
-              </div>
-            )}
+            <div className="px-4 py-3 border-t border-gray-100 text-xs text-gray-500 flex flex-wrap gap-x-4 gap-y-1">
+              <span>
+                Valores dos meses em R$. Arrecadado em {ano}:{' '}
+                <strong className="font-medium text-gray-700">{brl(totalAnoSelecionado)}</strong>
+              </span>
+              {temAnterior && (
+                <span className="flex items-center gap-1">
+                  <Info size={13} />
+                  <strong className="font-medium">Anterior</strong>: valores informados direto no
+                  cadastro do participante, sem mês de competência.
+                </span>
+              )}
+            </div>
           </div>
-
-          {temAnterior && (
-            <p className="mt-3 text-xs text-gray-500 flex items-start gap-2">
-              <Info size={14} className="flex-shrink-0 mt-0.5" />
-              A coluna <strong className="font-medium">Anterior</strong> mostra valores informados direto
-              no cadastro do participante, sem mês de competência.
-            </p>
-          )}
 
           {lancamentos.length > 0 && (
             <div className="mt-6 bg-white rounded-2xl shadow-lg p-6">
