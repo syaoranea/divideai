@@ -11,6 +11,7 @@ import { EditGroupModal } from '@/components/edit-group-modal';
 import { AddPaymentModal } from '@/components/add-payment-modal';
 import { PaymentHistoryTable } from '@/components/payment-history-table';
 import { LinkPessoal } from '@/components/link-pessoal';
+import { pixConfigurado } from '@/lib/pix';
 import { useGrupo, formatarDataEvento, brl, type Participante } from '@/lib/grupo-context';
 
 export default function GerenciarPage() {
@@ -95,6 +96,11 @@ export default function GerenciarPage() {
           <p className="text-sm text-gray-600">
             {formatarDataEvento(grupo.dataEvento, grupo.dataTermino)} · Orçamento{' '}
             {brl(grupo.orcamentoMaximoPorPessoa)}
+          </p>
+          <p className={`text-sm mt-1 font-semibold ${pixConfigurado(grupo.pix) ? 'text-green-700' : 'text-amber-700'}`}>
+            {pixConfigurado(grupo.pix)
+              ? `Pix: ${grupo.pix.chave} ✓`
+              : 'Pix não cadastrado: toque em Editar para a família poder pagar pelo app'}
           </p>
         </div>
         {grupo.statusGrupo !== 'FECHADO' && (
@@ -200,6 +206,7 @@ export default function GerenciarPage() {
           dataTermino: grupo.dataTermino,
           orcamentoMaximoPorPessoa: grupo.orcamentoMaximoPorPessoa,
           tema: grupo.tema,
+          pix: grupo.pix,
         }}
       />
     </div>

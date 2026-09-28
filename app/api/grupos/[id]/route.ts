@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { groupService } from '@/lib/services/groupService';
 import { normalizarTema } from '@/lib/temas';
 import { resolverAcesso } from '@/lib/acesso';
+import { TIPOS_CHAVE_PIX } from '@/lib/pix';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,6 +68,19 @@ export async function PATCH(
     if (body.statusGrupo !== undefined) updateData.statusGrupo = body.statusGrupo;
     if (body.imovelEscolhidoId !== undefined) updateData.imovelEscolhidoId = body.imovelEscolhidoId;
     if (body.tema !== undefined) updateData.tema = normalizarTema(body.tema);
+    if (body.pix !== undefined) {
+      const pix = body.pix;
+      const tipoValido = TIPOS_CHAVE_PIX.some((t) => t.id === pix?.tipo);
+      updateData.pix =
+        pix && tipoValido && pix.chave?.trim()
+          ? {
+              tipo: pix.tipo,
+              chave: String(pix.chave).trim(),
+              nome: String(pix.nome ?? '').trim(),
+              cidade: String(pix.cidade ?? '').trim(),
+            }
+          : null;
+    }
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: 'Nenhum campo para atualizar' }, { status: 400 });

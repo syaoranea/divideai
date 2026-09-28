@@ -17,6 +17,8 @@ export interface Participant {
   valorIndividual?: number;
   valorPago: number;
   tokenAcesso?: string;
+  acompanhantesAdultos?: number;
+  acompanhantesCriancas?: number;
   createdAt: Date;
 }
 

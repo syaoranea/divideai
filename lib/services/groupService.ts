@@ -1,5 +1,6 @@
 import { db } from '../firebaseAdmin';
 import type { Tema } from '../temas';
+import type { ConfigPix } from '../pix';
 
 export enum StatusGrupo {
   ABERTO = 'ABERTO',
@@ -16,6 +17,7 @@ export interface Group {
   statusGrupo: StatusGrupo;
   imovelEscolhidoId?: string;
   tema?: Tema;
+  pix?: ConfigPix | null;
   createdAt: Date;
 }
 

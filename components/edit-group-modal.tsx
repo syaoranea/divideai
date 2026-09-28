@@ -5,6 +5,7 @@ import { X, Save, Calendar, DollarSign, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TemaPicker } from '@/components/tema-picker';
 import { normalizarTema, type Tema } from '@/lib/temas';
+import { TIPOS_CHAVE_PIX, type ConfigPix, type TipoChavePix } from '@/lib/pix';
 
 interface EditGroupModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface EditGroupModalProps {
     dataTermino?: string;
     orcamentoMaximoPorPessoa: number;
     tema: Tema;
+    pix: ConfigPix | null;
   }) => Promise<void>;
   group: {
     nome: string;
@@ -22,6 +24,7 @@ interface EditGroupModalProps {
     dataTermino?: string;
     orcamentoMaximoPorPessoa: number;
     tema?: string;
+    pix?: ConfigPix | null;
   } | null;
 }
 
@@ -31,6 +34,10 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
   const [dataTermino, setDataTermino] = useState('');
   const [orcamento, setOrcamento] = useState('');
   const [tema, setTema] = useState<Tema>(normalizarTema(undefined));
+  const [pixTipo, setPixTipo] = useState<TipoChavePix>('telefone');
+  const [pixChave, setPixChave] = useState('');
+  const [pixNome, setPixNome] = useState('');
+  const [pixCidade, setPixCidade] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -52,6 +59,10 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
       }
       setOrcamento(String(group.orcamentoMaximoPorPessoa ?? 0));
       setTema(normalizarTema(group.tema));
+      setPixTipo(group.pix?.tipo ?? 'telefone');
+      setPixChave(group.pix?.chave ?? '');
+      setPixNome(group.pix?.nome ?? '');
+      setPixCidade(group.pix?.cidade ?? '');
       setError('');
     }
   }, [group]);
@@ -68,6 +79,9 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
         dataTermino: dataTermino || undefined,
         orcamentoMaximoPorPessoa: parseFloat(orcamento) || 0,
         tema,
+        pix: pixChave.trim()
+          ? { tipo: pixTipo, chave: pixChave, nome: pixNome, cidade: pixCidade }
+          : null,
       });
       onClose?.();
     } catch (err: any) {
@@ -171,6 +185,54 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tema do evento</label>
                 <TemaPicker value={tema} onChange={setTema} />
               </div>
+
+              <fieldset className="rounded-xl border border-gray-200 p-4 space-y-3">
+                <legend className="px-1 text-sm font-medium text-gray-700">Pix para receber</legend>
+                <p className="text-xs text-gray-500 -mt-1">
+                  Com isso, a família copia o Pix já com o valor certo na aba Pagar.
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {TIPOS_CHAVE_PIX.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setPixTipo(t.id)}
+                      className={`px-3 py-1 rounded-full text-sm font-semibold border transition-colors ${
+                        pixTipo === t.id
+                          ? 'bg-brand-600 text-white border-brand-600'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300'
+                      }`}
+                    >
+                      {t.nome}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  value={pixChave}
+                  onChange={(e) => setPixChave(e.target?.value ?? '')}
+                  placeholder={TIPOS_CHAVE_PIX.find((t) => t.id === pixTipo)?.exemplo}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={pixNome}
+                    onChange={(e) => setPixNome(e.target?.value ?? '')}
+                    placeholder="Nome de quem recebe"
+                    required={!!pixChave.trim()}
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-sm"
+                  />
+                  <input
+                    type="text"
+                    value={pixCidade}
+                    onChange={(e) => setPixCidade(e.target?.value ?? '')}
+                    placeholder="Cidade"
+                    required={!!pixChave.trim()}
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-sm"
+                  />
+                </div>
+              </fieldset>
 
               {error && (
                 <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>

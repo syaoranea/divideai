@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useSession } from 'next-auth/react';
 import type { Pagamento } from '@/components/payment-history-table';
 import { normalizarTema, type Tema } from '@/lib/temas';
+import type { ConfigPix } from '@/lib/pix';
 
 export interface Participante {
   id: string;
@@ -13,6 +14,8 @@ export interface Participante {
   statusParticipacao: 'CONFIRMADO' | 'PENDENTE' | 'RECUSADO';
   valorIndividual: number | null;
   valorPago: number;
+  acompanhantesAdultos?: number;
+  acompanhantesCriancas?: number;
 }
 
 export interface Imovel {
@@ -42,6 +45,7 @@ export interface Grupo {
   orcamentoMaximoPorPessoa: number;
   statusGrupo: 'ABERTO' | 'FECHADO';
   tema?: string;
+  pix?: ConfigPix | null;
   organizador: { id: string; nome: string; email: string };
   participantes: Participante[];
   imovelEscolhido: Imovel | null;
