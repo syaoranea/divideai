@@ -67,3 +67,25 @@ export async function resolverAcesso(req: Request, grupoId: string): Promise<Ace
 
   return null;
 }
+
+export interface Identidade {
+  isOrganizer: boolean;
+  /** participante que está agindo (convidado, ou usuário logado com o mesmo e-mail) */
+  participanteId: string | null;
+}
+
+/** Para rotas de escrita: quem é o organizador e/ou qual participante está agindo */
+export async function identificarNoGrupo(req: Request, grupoId: string): Promise<Identidade | null> {
+  const acesso = await resolverAcesso(req, grupoId);
+  if (!acesso) return null;
+  if (acesso.tipo === 'convidado') {
+    return { isOrganizer: false, participanteId: acesso.participante.id };
+  }
+  const grupoDoc = await db.collection('groups').doc(grupoId).get();
+  if (!grupoDoc.exists) return null;
+  const isOrganizer = grupoDoc.data()?.organizadorId === acesso.userId;
+  const participantes = await participantService.getParticipantsByGroupId(grupoId);
+  const eu = acesso.email ? participantes.find((p) => p.emailParticipante === acesso.email) : undefined;
+  if (!isOrganizer && !eu) return null;
+  return { isOrganizer, participanteId: eu?.id ?? null };
+}

@@ -8,7 +8,7 @@ import {
   Building2, Vote, CheckCircle, ExternalLink, Trophy, Users, DollarSign, Plus, Hourglass,
 } from 'lucide-react';
 import { PropertyCard } from '@/components/property-card';
-import { VotingCard } from '@/components/voting-card';
+import { VotacaoDeck } from '@/components/votacao-deck';
 import { EditPropertyModal } from '@/components/edit-property-modal';
 import { useGrupo, brl, type Imovel } from '@/lib/grupo-context';
 
@@ -74,15 +74,15 @@ export default function LocalPage() {
       fetch(`/api/grupos/${grupoId}/imoveis-votacao?imovelId=${imovelId}`, { method: 'DELETE' })
     );
 
-  const handleVote = (imovelId: string) => {
+  const handleVote = async (imovelId: string) => {
     if (!myParticipant) return;
-    comLoading(() =>
-      apiFetch(`/api/grupos/${grupoId}/votos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ participanteId: myParticipant.id, imovelId }),
-      })
-    );
+    const res = await apiFetch(`/api/grupos/${grupoId}/votos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participanteId: myParticipant.id, imovelId }),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? 'Erro ao votar');
+    await refresh();
   };
 
   const handleFinalizarVotacao = () => {
@@ -230,30 +230,20 @@ export default function LocalPage() {
           <>
             {!canVote && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4 text-yellow-800 text-sm">
-                Só quem confirmou presença pode votar.
+                {myParticipant
+                  ? 'Só quem confirmou presença pode votar. Confirme no Início!'
+                  : 'Você está vendo a votação como organizador.'}
               </div>
             )}
-            <div className="grid gap-6 sm:grid-cols-2">
-              {emVotacao.map((iv) => (
-                <VotingCard
-                  key={iv.id}
-                  id={iv.imovel?.id ?? ''}
-                  nome={iv.imovel?.nome ?? ''}
-                  imagemUrl={iv.imovel?.imagemUrl ?? ''}
-                  precoTotalDiaria={iv.imovel?.precoTotalDiaria ?? 0}
-                  capacidadeMaxima={iv.imovel?.capacidadeMaxima ?? 0}
-                  numConfirmados={numConfirmados}
-                  votosCount={voteCounts[iv.imovelId] ?? 0}
-                  hasVoted={!!myVote}
-                  isMyVote={myVote?.imovelId === iv.imovelId}
-                  disabled={!canVote || actionLoading}
-                  onVote={() => handleVote(iv.imovelId)}
-                />
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-gray-600">
-              {grupo.votos?.length ?? 0} de {numConfirmados} confirmados já votaram
-            </p>
+            <VotacaoDeck
+              opcoes={emVotacao}
+              numConfirmados={numConfirmados}
+              voteCounts={voteCounts}
+              totalVotos={grupo.votos?.length ?? 0}
+              meuVotoId={myVote?.imovelId}
+              podeVotar={canVote}
+              onVotar={handleVote}
+            />
           </>
         )}
       </section>
