@@ -12,6 +12,7 @@ interface ParticipantCardProps {
   valorPago?: number;
   onClick?: () => void;
   showValue?: boolean;
+  acompanhantes?: number;
   /** conteúdo extra no rodapé do card (ex.: botões do link pessoal) */
   children?: React.ReactNode;
 }
@@ -25,6 +26,7 @@ export function ParticipantCard({
   valorPago = 0,
   onClick,
   showValue = true,
+  acompanhantes = 0,
   children,
 }: ParticipantCardProps) {
   const statusConfig = {
@@ -79,6 +81,11 @@ export function ParticipantCard({
                 {telefone}
               </p>
             ) : null}
+            {acompanhantes > 0 && (
+              <p className="text-xs font-semibold text-brand-700">
+                +{acompanhantes} {acompanhantes === 1 ? 'acompanhante' : 'acompanhantes'}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
