@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Lock, LogIn, Users } from 'lucide-react';
+import { LogoIcon } from '@/components/logo';
+import { Mail, Lock, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function LoginPage() {
@@ -48,7 +49,7 @@ export default function LoginPage() {
   if (status === 'loading' || status === 'authenticated') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -61,11 +62,9 @@ export default function LoginPage() {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg mb-4">
-            <Users size={40} className="text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-emerald-800">Natal 2026</h1>
-          <p className="text-gray-600 mt-2">Celebrando a união e confraternização em família</p>
+          <LogoIcon size={80} className="inline-block mb-4 drop-shadow-lg" />
+          <h1 className="text-3xl font-extrabold text-brand-800">Casa Cheia</h1>
+          <p className="text-gray-600 mt-2">A família reunida, cada um fazendo a sua parte</p>
         </div>
 
         <div className="glass-card rounded-2xl p-8 shadow-xl">
@@ -82,7 +81,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target?.value ?? '')}
                   placeholder="seu@email.com"
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
             </div>
@@ -97,7 +96,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target?.value ?? '')}
                   placeholder="Sua senha"
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
             </div>
@@ -109,7 +108,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -125,7 +124,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Não tem uma conta?{' '}
-              <Link href="/signup" className="text-emerald-600 font-medium hover:underline">
+              <Link href="/signup" className="text-brand-600 font-medium hover:underline">
                 Cadastre-se
               </Link>
             </p>

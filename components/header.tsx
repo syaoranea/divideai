@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { LogoIcon } from '@/components/logo';
 import { Home, Users, Building2, LogOut, Menu, X, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,31 +18,29 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-emerald-300 transition-shadow">
-              <span className="text-white font-bold text-lg">🎄</span>
-            </div>
-            <span className="text-xl font-bold text-emerald-700 hidden sm:block">Natal 2026</span>
+            <LogoIcon size={40} className="drop-shadow-md group-hover:scale-105 transition-transform" />
+            <span className="text-xl font-extrabold tracking-tight text-brand-800 hidden sm:block">Casa Cheia</span>
           </Link>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-2">
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 transition-colors"
             >
               <Home size={18} />
               <span>Meus Grupos</span>
             </Link>
             <Link
               href="/grupos/novo"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white transition-colors shadow-md hover:shadow-lg"
             >
               <Plus size={18} />
               <span>Novo Grupo</span>
             </Link>
             <Link
               href="/imoveis/cadastrar"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 transition-colors"
             >
               <Building2 size={18} />
               <span>Cadastrar Imóvel</span>
@@ -57,7 +56,7 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-emerald-100 text-emerald-700"
+            className="md:hidden p-2 rounded-lg hover:bg-brand-100 text-brand-700"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -75,7 +74,7 @@ export function Header() {
             >
               <Link
                 href="/dashboard"
-                className="flex items-center gap-2 px-4 py-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700"
+                className="flex items-center gap-2 px-4 py-3 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Home size={18} />
@@ -83,7 +82,7 @@ export function Header() {
               </Link>
               <Link
                 href="/grupos/novo"
-                className="flex items-center gap-2 px-4 py-3 rounded-lg bg-emerald-600 text-white"
+                className="flex items-center gap-2 px-4 py-3 rounded-lg bg-brand-600 text-white"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Plus size={18} />
@@ -91,7 +90,7 @@ export function Header() {
               </Link>
               <Link
                 href="/imoveis/cadastrar"
-                className="flex items-center gap-2 px-4 py-3 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700"
+                className="flex items-center gap-2 px-4 py-3 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <Building2 size={18} />

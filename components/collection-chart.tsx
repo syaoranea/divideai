@@ -44,7 +44,7 @@ export function CollectionChart({ totalDevido, totalArrecadado, participantes }:
       className="bg-white rounded-2xl p-6 shadow-lg"
     >
       <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-        <TrendingUp className="text-emerald-600" size={20} />
+        <TrendingUp className="text-brand-600" size={20} />
         Valor Arrecadado
       </h3>
 
@@ -67,7 +67,7 @@ export function CollectionChart({ totalDevido, totalArrecadado, participantes }:
               cy="90"
               r={radius}
               fill="none"
-              stroke={porcentagem >= 100 ? '#10b981' : porcentagem >= 50 ? '#f59e0b' : '#ef4444'}
+              stroke={porcentagem >= 100 ? 'rgb(var(--brand-500))' : porcentagem >= 50 ? '#f59e0b' : '#ef4444'}
               strokeWidth={strokeWidth}
               strokeLinecap="round"
               strokeDasharray={circumference}
@@ -84,12 +84,12 @@ export function CollectionChart({ totalDevido, totalArrecadado, participantes }:
 
         {/* Stats */}
         <div className="flex-1 w-full space-y-3">
-          <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-xl">
+          <div className="flex items-center justify-between p-3 bg-brand-50 rounded-xl">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-500" />
+              <div className="w-3 h-3 rounded-full bg-brand-500" />
               <span className="text-sm text-gray-700">Arrecadado</span>
             </div>
-            <span className="font-bold text-emerald-600">R$ {totalArrecadado.toFixed(2)}</span>
+            <span className="font-bold text-brand-600">R$ {totalArrecadado.toFixed(2)}</span>
           </div>
 
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
@@ -121,7 +121,7 @@ export function CollectionChart({ totalDevido, totalArrecadado, participantes }:
                 <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-700 ${
-                      seg.porcentagemPaga >= 100 ? 'bg-emerald-500' : seg.porcentagemPaga > 0 ? 'bg-amber-400' : 'bg-gray-200'
+                      seg.porcentagemPaga >= 100 ? 'bg-brand-500' : seg.porcentagemPaga > 0 ? 'bg-amber-400' : 'bg-gray-200'
                     }`}
                     style={{ width: `${seg.porcentagemPaga}%` }}
                   />

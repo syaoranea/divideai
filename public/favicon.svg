@@ -1,10 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
   <defs>
-    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
+    <linearGradient id="casaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e17d52"/>
+      <stop offset="100%" stop-color="#943b22"/>
     </linearGradient>
   </defs>
-  <rect width="256" height="256" rx="56" ry="56" fill="url(#emeraldGrad)"/>
-  <text x="128" y="128" font-family="Arial, sans-serif" font-size="160" font-weight="bold" fill="#ffffff" text-anchor="middle" dominant-baseline="central">D</text>
+  <rect width="256" height="256" rx="56" fill="url(#casaGrad)"/>
+  <path d="M128 52 L208 118 V200 a8 8 0 0 1 -8 8 H56 a8 8 0 0 1 -8 -8 V118 Z" fill="#fdf5f0"/>
+  <path d="M128 186 C100 166 86 152 86 134 a20 20 0 0 1 42 -8 a20 20 0 0 1 42 8 C170 152 156 166 128 186 Z" fill="#cf5f33"/>
 </svg>

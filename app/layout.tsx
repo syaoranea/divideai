@@ -1,12 +1,15 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Nunito } from 'next/font/google';
 import { Providers } from './providers';
 import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
-const inter = Inter({ subsets: ['latin'] });
+const nunito = Nunito({ subsets: ['latin'], variable: '--font-nunito' });
+
+const TITULO = 'Casa Cheia';
+const DESCRICAO = 'A família reunida, cada um fazendo a sua parte.';
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
@@ -15,16 +18,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = `${protocol}://${host}`;
 
   return {
-    title: 'Natal 2026 - União e Confraternização',
-    description: 'Organizando momentos inesquecíveis de união e confraternização em família.',
+    title: TITULO,
+    description: DESCRICAO,
     metadataBase: new URL(baseUrl),
     icons: {
       icon: '/favicon.svg',
       shortcut: '/favicon.svg',
     },
     openGraph: {
-      title: 'Natal 2026 - União e Confraternização',
-      description: 'Organizando momentos inesquecíveis de união e confraternização em família.',
+      title: TITULO,
+      description: DESCRICAO,
       images: ['/og-image.png'],
     },
   };
@@ -41,7 +44,7 @@ export default function RootLayout({
         <script src="https://apps.abacus.ai/chatllm/appllm-lib.js"></script>
         <style dangerouslySetInnerHTML={{ __html: '[data-hydration-error] { display: none !important; }' }} />
       </head>
-      <body className={inter.className}>
+      <body className={`${nunito.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -94,7 +94,7 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <User className="text-emerald-600" />
+                <User className="text-brand-600" />
                 Editar Participante
               </h2>
               <button
@@ -116,7 +116,7 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
                     onChange={(e) => setNome(e.target?.value ?? '')}
                     placeholder="Nome do participante"
                     required
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -130,7 +130,7 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
                     value={telefone}
                     onChange={(e) => setTelefone(formatPhone(e.target?.value ?? ''))}
                     placeholder="(00) 00000-0000"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -150,7 +150,7 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
                       className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all text-sm font-medium ${
                         status === opt.value
                           ? opt.color === 'emerald'
-                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                            ? 'border-brand-500 bg-brand-50 text-brand-700'
                             : opt.color === 'yellow'
                             ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
                             : 'border-red-500 bg-red-50 text-red-700'
@@ -176,7 +176,7 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
                       value={valorPago}
                       onChange={(e) => setValorPago(e.target?.value ?? '')}
                       placeholder="0.00"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                     />
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
@@ -196,16 +196,16 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Valor pago agora:</span>
-                      <span className="font-medium text-emerald-600">+ R$ {pagoAgora.toFixed(2)}</span>
+                      <span className="font-medium text-brand-600">+ R$ {pagoAgora.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm pt-1 border-t border-gray-200">
                       <span className="text-gray-600 font-medium">Novo total pago:</span>
-                      <span className="font-bold text-emerald-600">R$ {novoTotalPago.toFixed(2)}</span>
+                      <span className="font-bold text-brand-600">R$ {novoTotalPago.toFixed(2)}</span>
                     </div>
                     {participant?.valorIndividual != null && (
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600 font-medium">Saldo restante:</span>
-                        <span className={`font-bold ${saldo <= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                        <span className={`font-bold ${saldo <= 0 ? 'text-brand-600' : 'text-red-600'}`}>
                           {saldo <= 0 ? 'Quitado ✓' : `R$ ${saldo.toFixed(2)}`}
                         </span>
                       </div>
@@ -221,7 +221,7 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-4 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

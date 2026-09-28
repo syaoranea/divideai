@@ -67,7 +67,7 @@ export function PropertyCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       onClick={onClick}
-      className={`bg-white rounded-2xl shadow-lg overflow-hidden card-hover ${onClick ? 'cursor-pointer' : ''} ${isSelected ? 'ring-4 ring-emerald-500' : ''}`}
+      className={`bg-white rounded-2xl shadow-lg overflow-hidden card-hover ${onClick ? 'cursor-pointer' : ''} ${isSelected ? 'ring-4 ring-brand-500' : ''}`}
     >
       <div className="relative aspect-video bg-gray-200">
         {imagemUrl && !imgError ? (
@@ -79,12 +79,12 @@ export function PropertyCard({
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-teal-100">
-            <Waves size={48} className="text-emerald-400" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-100 to-brand-100">
+            <Waves size={48} className="text-brand-400" />
           </div>
         )}
         {isSelected && (
-          <div className="absolute top-3 right-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+          <div className="absolute top-3 right-3 bg-brand-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
             <Check size={16} />
             Selecionado
           </div>
@@ -100,25 +100,25 @@ export function PropertyCard({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-colors"
+              className="p-2 bg-brand-50 text-brand-600 rounded-lg hover:bg-brand-100 transition-colors"
               title="Ver no Airbnb"
             >
               <ExternalLink size={18} />
             </a>
           )}
         </div>
-        {localizacao && <p className="text-emerald-700 font-medium text-sm mb-1">{localizacao}</p>}
+        {localizacao && <p className="text-brand-700 font-medium text-sm mb-1">{localizacao}</p>}
 
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{descricao ?? ''}</p>
 
         <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
           <div className="flex items-center gap-1">
-            <Users size={16} className="text-emerald-600" />
+            <Users size={16} className="text-brand-600" />
             <span>Até {capacidadeMaxima ?? 0} pessoas</span>
           </div>
           {quartos !== undefined && (
             <div className="flex items-center gap-1">
-              <span className="font-medium text-emerald-600">{quartos}</span>
+              <span className="font-medium text-brand-600">{quartos}</span>
               <span>quartos</span>
             </div>
           )}
@@ -130,7 +130,7 @@ export function PropertyCard({
             return (
               <span
                 key={idx}
-                className="flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs"
+                className="flex items-center gap-1 px-2 py-1 bg-brand-50 text-brand-700 rounded-full text-xs"
               >
                 <Icon size={12} />
                 {comodidade}
@@ -144,8 +144,8 @@ export function PropertyCard({
           )}
         </div>
 
-        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 mb-4">
-          <p className="text-3xl font-bold text-emerald-600">
+        <div className="bg-gradient-to-r from-brand-50 to-brand-50 rounded-xl p-4 mb-4">
+          <p className="text-3xl font-bold text-brand-600">
             R$ {precoIndividual?.toFixed?.(2) ?? '0.00'}
             <span className="text-sm font-normal text-gray-500">/pessoa</span>
           </p>
@@ -167,7 +167,7 @@ export function PropertyCard({
             ) : (
               <button
                 onClick={(e) => { e.stopPropagation(); onAddToVoting?.(); }}
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium"
+                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors font-medium"
               >
                 <Plus size={18} />
                 Adicionar à Votação

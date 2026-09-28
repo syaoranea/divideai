@@ -60,8 +60,8 @@ export function GuestAccessModal({ isOpen, grupoId, onSuccess }: GuestAccessModa
         className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
       >
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mb-4">
-            <Lock size={32} className="text-emerald-600" />
+          <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mb-4">
+            <Lock size={32} className="text-brand-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Acesso ao Grupo</h2>
           <p className="text-gray-600">
@@ -72,7 +72,7 @@ export function GuestAccessModal({ isOpen, grupoId, onSuccess }: GuestAccessModa
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-              <Phone size={16} className="text-emerald-600" />
+              <Phone size={16} className="text-brand-600" />
               Seu Telefone
             </label>
             <input
@@ -81,7 +81,7 @@ export function GuestAccessModal({ isOpen, grupoId, onSuccess }: GuestAccessModa
               onChange={(e) => setPhone(e.target.value)}
               placeholder="(00) 00000-0000"
               required
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-lg"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-lg"
             />
           </div>
 
@@ -99,7 +99,7 @@ export function GuestAccessModal({ isOpen, grupoId, onSuccess }: GuestAccessModa
           <button
             type="submit"
             disabled={loading || !phone}
-            className="w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-4 bg-brand-600 text-white rounded-xl font-bold text-lg hover:bg-brand-700 transition-all shadow-lg shadow-brand-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />

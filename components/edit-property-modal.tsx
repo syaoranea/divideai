@@ -136,7 +136,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <Building2 className="text-emerald-600" />
+                <Building2 className="text-brand-600" />
                 Editar Imóvel
               </h2>
               <button
@@ -157,7 +157,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -169,7 +169,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     type="text"
                     value={localizacao}
                     onChange={(e) => setLocalizacao(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -184,7 +184,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                   onChange={(e) => setDescricao(e.target.value)}
                   required
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-none"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all resize-none"
                 />
               </div>
 
@@ -201,7 +201,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     min="0"
                     step="0.01"
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -215,7 +215,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     onChange={(e) => setCapacidade(e.target.value)}
                     min="1"
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -228,7 +228,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     value={quartos}
                     onChange={(e) => setQuartos(e.target.value)}
                     min="0"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -243,7 +243,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     type="url"
                     value={imagemUrl}
                     onChange={(e) => setImagemUrl(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -255,7 +255,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     type="url"
                     value={linkReserva}
                     onChange={(e) => setLinkReserva(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -272,7 +272,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     onChange={(e) => setNovaComodidade(e.target.value)}
                     placeholder="Adicionar comodidade..."
                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddComodidade())}
-                    className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                   <button
                     type="button"
@@ -287,13 +287,13 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                     {comodidades.map((c, idx) => (
                       <span
                         key={idx}
-                        className="flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm"
+                        className="flex items-center gap-1 px-3 py-1 bg-brand-50 text-brand-700 rounded-full text-sm"
                       >
                         {c}
                         <button
                           type="button"
                           onClick={() => handleRemoveComodidade(idx)}
-                          className="hover:text-emerald-900"
+                          className="hover:text-brand-900"
                         >
                           <X size={14} />
                         </button>
@@ -328,7 +328,7 @@ export function EditPropertyModal({ isOpen, onClose, onSave, onDelete, property 
                 <button
                   type="submit"
                   disabled={loading || deleteLoading}
-                  className="flex-1 py-3 px-4 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 py-3 px-4 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

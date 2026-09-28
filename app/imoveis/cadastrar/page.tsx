@@ -146,7 +146,7 @@ export default function CadastrarImovelPage() {
   if (status === 'loading' || status === 'unauthenticated') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -158,7 +158,7 @@ export default function CadastrarImovelPage() {
       <main className="max-w-2xl mx-auto px-4 py-8">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-brand-600 mb-6 transition-colors"
         >
           <ArrowLeft size={18} />
           Voltar ao dashboard
@@ -170,8 +170,8 @@ export default function CadastrarImovelPage() {
           className="bg-white rounded-2xl p-8 shadow-lg"
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-              <Building2 size={24} className="text-teal-600" />
+            <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
+              <Building2 size={24} className="text-brand-600" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-800">Cadastrar Imóvel</h1>
@@ -185,12 +185,12 @@ export default function CadastrarImovelPage() {
             </div>
           )}
 
-          <div className="bg-emerald-50 rounded-xl p-5 mb-8 border border-emerald-100">
-            <h2 className="text-sm font-bold text-emerald-800 mb-3 flex items-center gap-2">
+          <div className="bg-brand-50 rounded-xl p-5 mb-8 border border-brand-100">
+            <h2 className="text-sm font-bold text-brand-800 mb-3 flex items-center gap-2">
               <Search size={16} />
               Importação Mágica
             </h2>
-            <p className="text-sm text-emerald-700 mb-4">
+            <p className="text-sm text-brand-700 mb-4">
               Cole o link de um anúncio do Airbnb para preencher os dados do imóvel automaticamente.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -199,13 +199,13 @@ export default function CadastrarImovelPage() {
                 value={airbnbLink}
                 onChange={(e) => setAirbnbLink(e.target.value)}
                 placeholder="https://www.airbnb.com/rooms/..."
-                className="flex-1 px-4 py-3 border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                className="flex-1 px-4 py-3 border border-brand-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
               />
               <button
                 type="button"
                 onClick={handleImport}
                 disabled={importing}
-                className="px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 sm:w-auto"
+                className="px-6 py-3 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 sm:w-auto"
               >
                 {importing ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -226,12 +226,12 @@ export default function CadastrarImovelPage() {
                   onChange={(e) => setNome(e.target?.value ?? '')}
                   placeholder="Ex: Casa de Praia Paraíso"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                  <MapPin size={16} className="text-emerald-600" />
+                  <MapPin size={16} className="text-brand-600" />
                   Localização
                 </label>
                 <input
@@ -239,14 +239,14 @@ export default function CadastrarImovelPage() {
                   value={localizacao}
                   onChange={(e) => setLocalizacao(e.target?.value ?? '')}
                   placeholder="Ex: Ubatuba, SP"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <FileText size={16} className="text-emerald-600" />
+                <FileText size={16} className="text-brand-600" />
                 Descrição
               </label>
               <textarea
@@ -255,14 +255,14 @@ export default function CadastrarImovelPage() {
                 placeholder="Descreva o imóvel, seus atrativos e diferenciais..."
                 required
                 rows={4}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-none"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all resize-none"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                  <DollarSign size={16} className="text-emerald-600" />
+                  <DollarSign size={16} className="text-brand-600" />
                   Preço/Diária (R$) *
                 </label>
                 <input
@@ -273,12 +273,12 @@ export default function CadastrarImovelPage() {
                   min="0"
                   step="0.01"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                  <Users size={16} className="text-emerald-600" />
+                  <Users size={16} className="text-brand-600" />
                   Capacidade Máxima *
                 </label>
                 <input
@@ -288,12 +288,12 @@ export default function CadastrarImovelPage() {
                   placeholder="8"
                   min="1"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                  <Bed size={16} className="text-emerald-600" />
+                  <Bed size={16} className="text-brand-600" />
                   Número de Quartos
                 </label>
                 <input
@@ -302,14 +302,14 @@ export default function CadastrarImovelPage() {
                   onChange={(e) => setQuartos(e.target?.value ?? '')}
                   placeholder="Ex: 3"
                   min="0"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <ImageIcon size={16} className="text-emerald-600" />
+                <ImageIcon size={16} className="text-brand-600" />
                 URL da Imagem
               </label>
               <input
@@ -317,13 +317,13 @@ export default function CadastrarImovelPage() {
                 value={imagemUrl}
                 onChange={(e) => setImagemUrl(e.target?.value ?? '')}
                 placeholder="https://exemplo.com/imagem.jpg"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <LinkIcon size={16} className="text-emerald-600" />
+                <LinkIcon size={16} className="text-brand-600" />
                 Link de Reserva
               </label>
               <input
@@ -331,13 +331,13 @@ export default function CadastrarImovelPage() {
                 value={linkReserva}
                 onChange={(e) => setLinkReserva(e.target?.value ?? '')}
                 placeholder="https://airbnb.com/rooms/..."
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <Wifi size={16} className="text-emerald-600" />
+                <Wifi size={16} className="text-brand-600" />
                 Comodidades
               </label>
 
@@ -353,7 +353,7 @@ export default function CadastrarImovelPage() {
                     }}
                     className={`px-3 py-1 rounded-full text-sm transition-colors ${
                       comodidades?.includes(c)
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-brand-600 text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
@@ -369,12 +369,12 @@ export default function CadastrarImovelPage() {
                   onChange={(e) => setNovaComodidade(e.target?.value ?? '')}
                   placeholder="Outra comodidade..."
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddComodidade())}
-                  className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="flex-1 px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
                 <button
                   type="button"
                   onClick={handleAddComodidade}
-                  className="px-4 py-2 bg-emerald-100 text-emerald-600 rounded-xl hover:bg-emerald-200 transition-colors"
+                  className="px-4 py-2 bg-brand-100 text-brand-600 rounded-xl hover:bg-brand-200 transition-colors"
                 >
                   <Plus size={18} />
                 </button>
@@ -385,13 +385,13 @@ export default function CadastrarImovelPage() {
                   {(comodidades ?? []).map((c, idx) => (
                     <span
                       key={idx}
-                      className="flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm"
+                      className="flex items-center gap-1 px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-sm"
                     >
                       {c}
                       <button
                         type="button"
                         onClick={() => handleRemoveComodidade(idx)}
-                        className="hover:text-emerald-900"
+                        className="hover:text-brand-900"
                       >
                         <X size={14} />
                       </button>
@@ -408,7 +408,7 @@ export default function CadastrarImovelPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-teal-600 text-white rounded-xl font-medium hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

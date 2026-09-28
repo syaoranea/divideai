@@ -41,7 +41,7 @@ export function VotingCard({
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
       className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all ${
-        isMyVote ? 'ring-4 ring-emerald-500' : ''
+        isMyVote ? 'ring-4 ring-brand-500' : ''
       }`}
     >
       <div className="relative aspect-video bg-gray-200">
@@ -54,20 +54,20 @@ export function VotingCard({
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-teal-100">
-            <Waves size={48} className="text-emerald-400" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-brand-100 to-brand-100">
+            <Waves size={48} className="text-brand-400" />
           </div>
         )}
         
         {/* Vote counter badge */}
         <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full shadow-md flex items-center gap-2">
-          <Vote size={16} className="text-emerald-600" />
-          <span className="font-bold text-emerald-700">{votosCount ?? 0}</span>
+          <Vote size={16} className="text-brand-600" />
+          <span className="font-bold text-brand-700">{votosCount ?? 0}</span>
           <span className="text-sm text-gray-500">votos</span>
         </div>
 
         {isMyVote && (
-          <div className="absolute top-3 left-3 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+          <div className="absolute top-3 left-3 bg-brand-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
             <Check size={14} />
             Meu voto
           </div>
@@ -83,7 +83,7 @@ export function VotingCard({
             <span className="text-sm">Até {capacidadeMaxima ?? 0}</span>
           </div>
           <div className="text-right">
-            <p className="text-xl font-bold text-emerald-600">
+            <p className="text-xl font-bold text-brand-600">
               R$ {precoIndividual?.toFixed?.(2) ?? '0.00'}
             </p>
             <p className="text-xs text-gray-500">por pessoa</p>
@@ -95,10 +95,10 @@ export function VotingCard({
           disabled={disabled || isMyVote}
           className={`w-full py-3 px-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
             isMyVote
-              ? 'bg-emerald-100 text-emerald-700 cursor-default'
+              ? 'bg-brand-100 text-brand-700 cursor-default'
               : disabled
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-emerald-600 text-white hover:bg-emerald-700'
+              : 'bg-brand-600 text-white hover:bg-brand-700'
           }`}
         >
           {isMyVote ? (

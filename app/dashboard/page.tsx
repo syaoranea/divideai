@@ -86,7 +86,7 @@ export default function DashboardPage() {
   if (status === 'loading' || status === 'unauthenticated') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function DashboardPage() {
             Olá, {(session?.user as any)?.name ?? 'Usuário'}! 👋
           </h1>
           <p className="text-gray-600">
-            Gerencie seus grupos e divida custos com amigos de forma simples.
+            Seus eventos de família, todos num lugar só.
           </p>
         </motion.div>
 
@@ -114,7 +114,7 @@ export default function DashboardPage() {
           <Link href="/grupos/novo">
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-lg cursor-pointer"
+              className="bg-gradient-to-r from-brand-500 to-brand-600 rounded-2xl p-6 text-white shadow-lg cursor-pointer"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -131,7 +131,7 @@ export default function DashboardPage() {
           <Link href="/imoveis/cadastrar">
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl p-6 text-white shadow-lg cursor-pointer"
+              className="bg-gradient-to-r from-brand-600 to-brand-800 rounded-2xl p-6 text-white shadow-lg cursor-pointer"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -149,13 +149,13 @@ export default function DashboardPage() {
         {/* Groups List */}
         <div>
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <Home size={24} className="text-emerald-600" />
+            <Home size={24} className="text-brand-600" />
             Meus Grupos
           </h2>
 
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (grupos?.length ?? 0) === 0 ? (
             <motion.div
@@ -163,14 +163,14 @@ export default function DashboardPage() {
               animate={{ opacity: 1 }}
               className="bg-white rounded-2xl p-12 text-center shadow-lg"
             >
-              <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users size={32} className="text-emerald-600" />
+              <div className="w-20 h-20 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users size={32} className="text-brand-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Nenhum grupo ainda</h3>
               <p className="text-gray-600 mb-6">Crie seu primeiro grupo para começar a dividir custos!</p>
               <Link
                 href="/grupos/novo"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors"
               >
                 <Plus size={18} />
                 Criar Grupo
@@ -190,19 +190,19 @@ export default function DashboardPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <Link href={`/grupos/${grupo?.id}`}>
+                    <Link href={`/g/${grupo?.id}`}>
                       <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all group cursor-pointer">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-xl font-bold text-gray-800 group-hover:text-emerald-600 transition-colors">
+                              <h3 className="text-xl font-bold text-gray-800 group-hover:text-brand-600 transition-colors">
                                 {grupo?.nome ?? 'Grupo'}
                               </h3>
                               <span
                                 className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
                                   grupo?.statusGrupo === 'FECHADO'
                                     ? 'bg-gray-100 text-gray-600'
-                                    : 'bg-emerald-100 text-emerald-700'
+                                    : 'bg-brand-100 text-brand-700'
                                 }`}
                               >
                                 {grupo?.statusGrupo === 'FECHADO' ? (
@@ -215,21 +215,21 @@ export default function DashboardPage() {
 
                             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                               <span className="flex items-center gap-1">
-                                <Calendar size={16} className="text-emerald-500" />
+                                <Calendar size={16} className="text-brand-500" />
                                 {formatDate(grupo?.dataEvento ?? '', grupo?.dataTermino)}
                               </span>
                               <span className="flex items-center gap-1">
-                                <Users size={16} className="text-emerald-500" />
+                                <Users size={16} className="text-brand-500" />
                                 {confirmados} confirmados
                               </span>
                               <span className="flex items-center gap-1">
-                                <DollarSign size={16} className="text-emerald-500" />
+                                <DollarSign size={16} className="text-brand-500" />
                                 R$ {(grupo?.orcamentoMaximoPorPessoa ?? 0)?.toFixed?.(2)}
                               </span>
                             </div>
 
                             {grupo?.imovelEscolhido && (
-                              <p className="mt-2 text-sm text-emerald-600 font-medium">
+                              <p className="mt-2 text-sm text-brand-600 font-medium">
                                 🏠 Imóvel: {grupo.imovelEscolhido?.nome ?? 'Definido'}
                               </p>
                             )}
@@ -237,7 +237,7 @@ export default function DashboardPage() {
 
                           <ChevronRight
                             size={24}
-                            className="text-gray-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all"
+                            className="text-gray-400 group-hover:text-brand-600 group-hover:translate-x-1 transition-all"
                           />
                         </div>
                       </div>

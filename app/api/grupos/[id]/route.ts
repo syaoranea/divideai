@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { groupService } from '@/lib/services/groupService';
+import { normalizarTema } from '@/lib/temas';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,6 +70,7 @@ export async function PATCH(
     if (body.orcamentoMaximoPorPessoa !== undefined) updateData.orcamentoMaximoPorPessoa = parseFloat(body.orcamentoMaximoPorPessoa);
     if (body.statusGrupo !== undefined) updateData.statusGrupo = body.statusGrupo;
     if (body.imovelEscolhidoId !== undefined) updateData.imovelEscolhidoId = body.imovelEscolhidoId;
+    if (body.tema !== undefined) updateData.tema = normalizarTema(body.tema);
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: 'Nenhum campo para atualizar' }, { status: 400 });

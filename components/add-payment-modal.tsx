@@ -85,7 +85,7 @@ export function AddPaymentModal({ isOpen, onClose, onSave, participantes }: AddP
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <DollarSign className="text-emerald-600" />
+                <DollarSign className="text-brand-600" />
                 Registrar Pagamento
               </h2>
               <button
@@ -105,7 +105,7 @@ export function AddPaymentModal({ isOpen, onClose, onSave, participantes }: AddP
                     value={participanteId}
                     onChange={(e) => setParticipanteId(e.target?.value ?? '')}
                     required
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-white appearance-none"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all bg-white appearance-none"
                   >
                     {(participantes ?? []).map((p) => (
                       <option key={p.id} value={p.id}>
@@ -128,7 +128,7 @@ export function AddPaymentModal({ isOpen, onClose, onSave, participantes }: AddP
                     onChange={(e) => setValor(e.target?.value ?? '')}
                     placeholder="0.00"
                     required
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -142,7 +142,7 @@ export function AddPaymentModal({ isOpen, onClose, onSave, participantes }: AddP
                     value={dataPagamento}
                     onChange={(e) => setDataPagamento(e.target?.value ?? '')}
                     required
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
                 <p className="mt-1 text-xs text-gray-500">
@@ -161,7 +161,7 @@ export function AddPaymentModal({ isOpen, onClose, onSave, participantes }: AddP
                     value={observacao}
                     onChange={(e) => setObservacao(e.target?.value ?? '')}
                     placeholder="Ex: Pix 1ª parcela"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                   />
                 </div>
               </div>
@@ -171,7 +171,7 @@ export function AddPaymentModal({ isOpen, onClose, onSave, participantes }: AddP
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-4 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

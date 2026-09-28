@@ -200,7 +200,7 @@ export function PaymentHistoryTable({
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          <History className="text-emerald-600" />
+          <History className="text-brand-600" />
           Histórico de Pagamentos
         </h2>
         <div className="flex items-center gap-3">
@@ -208,7 +208,7 @@ export function PaymentHistoryTable({
             <select
               value={ano}
               onChange={(e) => setAno(Number(e.target?.value) || anoPadrao)}
-              className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 font-medium focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+              className="px-3 py-2 border border-gray-200 rounded-xl bg-white text-gray-700 font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
               aria-label="Ano do histórico"
             >
               {anosDisponiveis.map((a) => (
@@ -221,7 +221,7 @@ export function PaymentHistoryTable({
           {isOrganizer && (
             <button
               onClick={() => onAddPayment?.()}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors"
             >
               <Plus size={18} />
               Registrar pagamento
@@ -266,7 +266,7 @@ export function PaymentHistoryTable({
                 </thead>
                 <tbody>
                   {linhas.map((linha) => (
-                    <tr key={linha.id} className="border-t border-gray-100 hover:bg-emerald-50/40">
+                    <tr key={linha.id} className="border-t border-gray-100 hover:bg-brand-50/40">
                       <td className="px-4 py-3 sticky left-0 bg-white border-r border-gray-200">
                         <span className="font-medium text-gray-800">{linha.nomeParticipante}</span>
                         {linha.statusParticipacao !== 'CONFIRMADO' && (
@@ -295,7 +295,7 @@ export function PaymentHistoryTable({
                               acumulado <= 0
                                 ? 'text-gray-300'
                                 : noMes > 0
-                                ? 'text-emerald-600 font-semibold'
+                                ? 'text-brand-600 font-semibold'
                                 : 'text-gray-400'
                             }`}
                           >
@@ -308,7 +308,7 @@ export function PaymentHistoryTable({
                           {linha.anosSeguintes > 0 ? num(linha.anosSeguintes) : '—'}
                         </td>
                       )}
-                      <td className="px-4 py-3 text-right font-bold text-emerald-600 whitespace-nowrap border-l border-gray-200">
+                      <td className="px-4 py-3 text-right font-bold text-brand-600 whitespace-nowrap border-l border-gray-200">
                         {brl(linha.totalPago)}
                       </td>
                       <td className="px-4 py-3 text-right text-gray-700 whitespace-nowrap">
@@ -318,7 +318,7 @@ export function PaymentHistoryTable({
                         {linha.valorIndividual == null ? (
                           <span className="text-gray-300">—</span>
                         ) : linha.saldo <= 0 ? (
-                          <span className="font-medium text-emerald-600">Quitado ✓</span>
+                          <span className="font-medium text-brand-600">Quitado ✓</span>
                         ) : (
                           <span className="font-medium text-red-600">{brl(linha.saldo)}</span>
                         )}
@@ -348,7 +348,7 @@ export function PaymentHistoryTable({
                       );
                     })}
                     {temAnosSeguintes && <td className={celulaMes}>{num(totalAnosSeguintes)}</td>}
-                    <td className="px-4 py-3 text-right text-emerald-700 whitespace-nowrap border-l border-gray-200">
+                    <td className="px-4 py-3 text-right text-brand-700 whitespace-nowrap border-l border-gray-200">
                       {brl(totalPagoGeral)}
                     </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -368,7 +368,7 @@ export function PaymentHistoryTable({
               <p className="flex items-center gap-1">
                 <Info size={13} className="flex-shrink-0" />
                 Cada mês mostra o <strong className="font-medium">total acumulado</strong> pago até
-                ali, em R$. Em <span className="text-emerald-600 font-semibold">verde</span> os meses
+                ali, em R$. Em <span className="text-brand-600 font-semibold">verde</span> os meses
                 com pagamento; em cinza o valor apenas se repete. Arrecadado em {ano}:{' '}
                 <strong className="font-medium text-gray-700">{brl(totalAnoSelecionado)}</strong>
               </p>
@@ -401,7 +401,7 @@ export function PaymentHistoryTable({
                       </p>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className="font-bold text-emerald-600">{brl(p.valor)}</span>
+                      <span className="font-bold text-brand-600">{brl(p.valor)}</span>
                       {isOrganizer && (
                         <button
                           onClick={() => handleDelete(p.id)}

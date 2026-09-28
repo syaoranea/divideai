@@ -3,16 +3,25 @@
 import { useState, useEffect } from 'react';
 import { X, Save, Calendar, DollarSign, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TemaPicker } from '@/components/tema-picker';
+import { normalizarTema, type Tema } from '@/lib/temas';
 
 interface EditGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: { nome: string; dataEvento: string; dataTermino?: string; orcamentoMaximoPorPessoa: number }) => Promise<void>;
+  onSave: (data: {
+    nome: string;
+    dataEvento: string;
+    dataTermino?: string;
+    orcamentoMaximoPorPessoa: number;
+    tema: Tema;
+  }) => Promise<void>;
   group: {
     nome: string;
     dataEvento: string;
     dataTermino?: string;
     orcamentoMaximoPorPessoa: number;
+    tema?: string;
   } | null;
 }
 
@@ -21,6 +30,7 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
   const [dataEvento, setDataEvento] = useState('');
   const [dataTermino, setDataTermino] = useState('');
   const [orcamento, setOrcamento] = useState('');
+  const [tema, setTema] = useState<Tema>(normalizarTema(undefined));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -41,6 +51,7 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
         setDataTermino('');
       }
       setOrcamento(String(group.orcamentoMaximoPorPessoa ?? 0));
+      setTema(normalizarTema(group.tema));
       setError('');
     }
   }, [group]);
@@ -56,6 +67,7 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
         dataEvento,
         dataTermino: dataTermino || undefined,
         orcamentoMaximoPorPessoa: parseFloat(orcamento) || 0,
+        tema,
       });
       onClose?.();
     } catch (err: any) {
@@ -79,12 +91,12 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md"
+            className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <Users className="text-emerald-600" />
+                <Users className="text-brand-600" />
                 Editar Grupo
               </h2>
               <button
@@ -104,13 +116,13 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
                   onChange={(e) => setNome(e.target?.value ?? '')}
                   placeholder="Nome do evento"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                  <Calendar size={16} className="text-emerald-600" />
+                  <Calendar size={16} className="text-brand-600" />
                   Data do Evento
                 </label>
                 <input
@@ -118,26 +130,26 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
                   value={dataEvento}
                   onChange={(e) => setDataEvento(e.target?.value ?? '')}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                  <Calendar size={16} className="text-emerald-600" />
+                  <Calendar size={16} className="text-brand-600" />
                   Término do Evento
                 </label>
                 <input
                   type="date"
                   value={dataTermino}
                   onChange={(e) => setDataTermino(e.target?.value ?? '')}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                  <DollarSign size={16} className="text-emerald-600" />
+                  <DollarSign size={16} className="text-brand-600" />
                   Orçamento (R$)
                 </label>
                 <input
@@ -148,11 +160,16 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
                   min="0"
                   step="0.01"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                 />
                 <p className="text-sm text-gray-500 mt-1">
                   Valor total disponível para o aluguel
                 </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tema do evento</label>
+                <TemaPicker value={tema} onChange={setTema} />
               </div>
 
               {error && (
@@ -162,7 +179,7 @@ export function EditGroupModal({ isOpen, onClose, onSave, group }: EditGroupModa
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-4 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

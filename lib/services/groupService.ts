@@ -1,4 +1,5 @@
 import { db } from '../firebaseAdmin';
+import type { Tema } from '../temas';
 
 export enum StatusGrupo {
   ABERTO = 'ABERTO',
@@ -14,6 +15,7 @@ export interface Group {
   orcamentoMaximoPorPessoa: number;
   statusGrupo: StatusGrupo;
   imovelEscolhidoId?: string;
+  tema?: Tema;
   createdAt: Date;
 }
 
@@ -128,12 +130,20 @@ export const groupService = {
       }
     }
 
+    // Fetch votes (a votação precisa deles para contar e saber quem já votou)
+    const votesSnapshot = await db.collection('votes').where('grupoId', '==', groupId).get();
+    const votos = votesSnapshot.docs.map((doc: any) => ({
+      participanteId: doc.data().participanteId,
+      imovelId: doc.data().imovelId,
+    }));
+
     return {
       ...group,
       organizador: organizerData,
       participantes: participants,
       imovelEscolhido,
-      imoveisEmVotacao
+      imoveisEmVotacao,
+      votos
     };
   },
 

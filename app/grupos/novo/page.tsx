@@ -7,6 +7,8 @@ import { Header } from '@/components/header';
 import { Calendar, DollarSign, Users, ArrowLeft, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { TemaPicker } from '@/components/tema-picker';
+import { TEMA_PADRAO, type Tema } from '@/lib/temas';
 
 export default function NovoGrupoPage() {
   const { data: session, status } = useSession() || {};
@@ -15,6 +17,7 @@ export default function NovoGrupoPage() {
   const [dataEvento, setDataEvento] = useState('');
   const [dataTermino, setDataTermino] = useState('');
   const [orcamento, setOrcamento] = useState('');
+  const [tema, setTema] = useState<Tema>(TEMA_PADRAO);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,6 +41,7 @@ export default function NovoGrupoPage() {
           dataEvento,
           dataTermino: dataTermino || undefined,
           orcamentoMaximoPorPessoa: parseFloat(orcamento),
+          tema,
         }),
       });
 
@@ -47,7 +51,7 @@ export default function NovoGrupoPage() {
         throw new Error(data?.error ?? 'Erro ao criar grupo');
       }
 
-      router.replace(`/grupos/${data?.id}`);
+      router.replace(`/g/${data?.id}`);
     } catch (err: any) {
       setError(err?.message ?? 'Erro ao criar grupo');
     } finally {
@@ -58,7 +62,7 @@ export default function NovoGrupoPage() {
   if (status === 'loading' || status === 'unauthenticated') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -70,7 +74,7 @@ export default function NovoGrupoPage() {
       <main className="max-w-2xl mx-auto px-4 py-8">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-brand-600 mb-6 transition-colors"
         >
           <ArrowLeft size={18} />
           Voltar ao dashboard
@@ -82,8 +86,8 @@ export default function NovoGrupoPage() {
           className="bg-white rounded-2xl p-8 shadow-lg"
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-              <Users size={24} className="text-emerald-600" />
+            <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
+              <Users size={24} className="text-brand-600" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-800">Criar Novo Grupo</h1>
@@ -100,13 +104,13 @@ export default function NovoGrupoPage() {
                 onChange={(e) => setNome(e.target?.value ?? '')}
                 placeholder="Ex: Final de semana na praia"
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <Calendar size={16} className="text-emerald-600" />
+                <Calendar size={16} className="text-brand-600" />
                 Data do Evento
               </label>
               <input
@@ -114,13 +118,13 @@ export default function NovoGrupoPage() {
                 value={dataEvento}
                 onChange={(e) => setDataEvento(e.target?.value ?? '')}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <DollarSign size={16} className="text-emerald-600" />
+                <DollarSign size={16} className="text-brand-600" />
                 Orçamento (R$)
               </label>
               <input
@@ -131,11 +135,16 @@ export default function NovoGrupoPage() {
                 min="0"
                 step="0.01"
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
               />
               <p className="text-sm text-gray-500 mt-1">
                 Valor total disponível para o aluguel do imóvel
               </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Tema do evento</label>
+              <TemaPicker value={tema} onChange={setTema} />
             </div>
 
             {error && (
@@ -145,7 +154,7 @@ export default function NovoGrupoPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-brand-600 text-white rounded-xl font-medium hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

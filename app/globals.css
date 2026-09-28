@@ -2,18 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --accent-primary: #10B981;
-  --accent-secondary: #059669;
-  --bg-primary: #F0FDF4;
-  --bg-secondary: #ECFDF5;
-  --text-primary: #064E3B;
-  --text-secondary: #065F46;
+/*
+ * Temas do Casa Cheia.
+ * A cor `brand` do Tailwind lê estas variáveis (triplas RGB), então trocar
+ * o data-tema no <html> recolore o app inteiro.
+ */
+:root,
+[data-tema='casa'] {
+  --brand-50: 253 245 240;
+  --brand-100: 250 230 218;
+  --brand-200: 244 202 178;
+  --brand-300: 236 166 130;
+  --brand-400: 225 125 82;
+  --brand-500: 207 95 51;
+  --brand-600: 180 75 39;
+  --brand-700: 148 59 34;
+  --brand-800: 119 50 33;
+  --brand-900: 97 43 30;
+  --festa: 217 160 50;
+  --bg-from: #fbf6ef;
+  --bg-to: #f6eadb;
+}
+
+[data-tema='natal'] {
+  --brand-50: 254 242 242;
+  --brand-100: 253 226 226;
+  --brand-200: 251 202 202;
+  --brand-300: 246 160 160;
+  --brand-400: 236 104 104;
+  --brand-500: 214 58 58;
+  --brand-600: 185 38 38;
+  --brand-700: 153 30 32;
+  --brand-800: 127 29 31;
+  --brand-900: 105 28 30;
+  --festa: 22 101 52;
+  --bg-from: #fdf7f2;
+  --bg-to: #f1e7dc;
+}
+
+[data-tema='reveillon'] {
+  --brand-50: 255 250 235;
+  --brand-100: 254 241 199;
+  --brand-200: 253 225 138;
+  --brand-300: 250 204 80;
+  --brand-400: 240 178 40;
+  --brand-500: 212 145 18;
+  --brand-600: 176 112 10;
+  --brand-700: 140 84 12;
+  --brand-800: 115 67 16;
+  --brand-900: 95 55 17;
+  --festa: 30 41 82;
+  --bg-from: #fbf8f1;
+  --bg-to: #efe7d3;
+}
+
+[data-tema='aniversario'] {
+  --brand-50: 253 242 248;
+  --brand-100: 252 231 243;
+  --brand-200: 251 207 232;
+  --brand-300: 249 168 212;
+  --brand-400: 244 114 182;
+  --brand-500: 226 72 150;
+  --brand-600: 199 44 122;
+  --brand-700: 164 30 99;
+  --brand-800: 136 27 83;
+  --brand-900: 114 26 71;
+  --festa: 124 58 237;
+  --bg-from: #fdf6f8;
+  --bg-to: #f6e6ed;
 }
 
 body {
-  background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 50%, #D1FAE5 100%);
+  background: linear-gradient(160deg, var(--bg-from) 0%, var(--bg-to) 100%);
+  background-attachment: fixed;
   min-height: 100vh;
+  color: #3b2a22;
 }
 
 .glass-card {
@@ -45,4 +108,13 @@ body {
 
 .card-hover {
   @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+/* Espaço para a barra inferior do celular, incluindo a área do gesto do iPhone */
+.pb-nav {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
 }

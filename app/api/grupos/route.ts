@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { groupService } from '@/lib/services/groupService';
+import { normalizarTema } from '@/lib/temas';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { nome, dataEvento, dataTermino, orcamentoMaximoPorPessoa } = body ?? {};
+    const { nome, dataEvento, dataTermino, orcamentoMaximoPorPessoa, tema } = body ?? {};
 
     if (!nome || !dataEvento || !orcamentoMaximoPorPessoa) {
       return NextResponse.json(
@@ -58,6 +59,7 @@ export async function POST(req: Request) {
       dataTermino: dataTermino ? new Date(dataTermino) : undefined,
       orcamentoMaximoPorPessoa: parseFloat(orcamentoMaximoPorPessoa),
       organizadorId: userId,
+      tema: normalizarTema(tema),
     });
 
     const grupoComDetalhes = await groupService.getGroupWithDetails(grupo.id);
