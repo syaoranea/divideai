@@ -11,7 +11,7 @@ interface EditParticipantModalProps {
     nomeParticipante: string;
     telefoneParticipante: string;
     statusParticipacao: string;
-    valorPago: number;
+    valorPagoAdicional: number;
   }) => Promise<void>;
   participant: {
     id: string;
@@ -36,7 +36,8 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
       setNome(participant.nomeParticipante ?? '');
       setTelefone(participant.telefoneParticipante ?? '');
       setStatus(participant.statusParticipacao ?? 'PENDENTE');
-      setValorPago(String(participant.valorPago ?? 0));
+      // Campo de entrada é o valor pago agora, somado ao total já pago
+      setValorPago('');
       setError('');
     }
   }, [participant]);
@@ -58,7 +59,7 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
         nomeParticipante: nome,
         telefoneParticipante: telefone,
         statusParticipacao: status,
-        valorPago: parseFloat(valorPago) || 0,
+        valorPagoAdicional: parseFloat(valorPago) || 0,
       });
       onClose?.();
     } catch (err: any) {
@@ -69,8 +70,10 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
   };
 
   const valorDevido = participant?.valorIndividual ?? 0;
-  const pago = parseFloat(valorPago) || 0;
-  const saldo = valorDevido - pago;
+  const pagoAgora = parseFloat(valorPago) || 0;
+  const totalAnterior = participant?.valorPago ?? 0;
+  const novoTotalPago = totalAnterior + pagoAgora;
+  const saldo = valorDevido - novoTotalPago;
 
   return (
     <AnimatePresence>
@@ -163,7 +166,7 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
 
               {status === 'CONFIRMADO' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor Já Pago (R$)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor pago</label>
                   <div className="relative">
                     <DollarSign size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
@@ -171,30 +174,43 @@ export function EditParticipantModal({ isOpen, onClose, onSave, participant }: E
                       step="0.01"
                       min="0"
                       value={valorPago}
-                      onChange={(e) => setValorPago(e.target?.value ?? '0')}
+                      onChange={(e) => setValorPago(e.target?.value ?? '')}
                       placeholder="0.00"
                       className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
                     />
                   </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Este valor é somado ao total já pago. Deixe em branco para não alterar.
+                  </p>
 
-                  {participant?.valorIndividual != null && (
-                    <div className="mt-3 p-3 bg-gray-50 rounded-xl space-y-1">
+                  <div className="mt-3 p-3 bg-gray-50 rounded-xl space-y-1">
+                    {participant?.valorIndividual != null && (
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Valor devido:</span>
                         <span className="font-medium text-gray-800">R$ {valorDevido.toFixed(2)}</span>
                       </div>
+                    )}
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Total já pago:</span>
+                      <span className="font-medium text-gray-800">R$ {totalAnterior.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Valor pago agora:</span>
+                      <span className="font-medium text-emerald-600">+ R$ {pagoAgora.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm pt-1 border-t border-gray-200">
+                      <span className="text-gray-600 font-medium">Novo total pago:</span>
+                      <span className="font-bold text-emerald-600">R$ {novoTotalPago.toFixed(2)}</span>
+                    </div>
+                    {participant?.valorIndividual != null && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Valor pago:</span>
-                        <span className="font-medium text-emerald-600">R$ {pago.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between text-sm pt-1 border-t border-gray-200">
                         <span className="text-gray-600 font-medium">Saldo restante:</span>
                         <span className={`font-bold ${saldo <= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                           {saldo <= 0 ? 'Quitado ✓' : `R$ ${saldo.toFixed(2)}`}
                         </span>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
 

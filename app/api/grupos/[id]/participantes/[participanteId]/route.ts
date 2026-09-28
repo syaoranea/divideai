@@ -18,7 +18,8 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { statusParticipacao, nomeParticipante, telefoneParticipante, valorPago } = body ?? {};
+    const { statusParticipacao, nomeParticipante, telefoneParticipante, valorPagoAdicional } =
+      body ?? {};
 
     const updateData: any = {};
 
@@ -31,8 +32,18 @@ export async function PATCH(
     if (telefoneParticipante !== undefined) {
       updateData.telefoneParticipante = telefoneParticipante;
     }
-    if (valorPago !== undefined) {
-      updateData.valorPago = parseFloat(valorPago) || 0;
+
+    // O valor informado é somado ao que já foi pago: total = pago informado + total anterior
+    const adicional = parseFloat(valorPagoAdicional) || 0;
+    if (adicional !== 0) {
+      const atuais = await participantService.getParticipantsByGroupId(params.id);
+      const atual = atuais.find((p) => p.id === params.participanteId);
+
+      if (!atual) {
+        return NextResponse.json({ error: 'Participante não encontrado' }, { status: 404 });
+      }
+
+      updateData.valorPago = Math.max((atual.valorPago ?? 0) + adicional, 0);
     }
 
     if (Object.keys(updateData).length === 0) {

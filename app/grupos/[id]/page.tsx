@@ -239,7 +239,7 @@ export default function GrupoDetailsPage() {
     nomeParticipante: string;
     telefoneParticipante: string;
     statusParticipacao: string;
-    valorPago: number;
+    valorPagoAdicional: number;
   }) => {
     if (!editingParticipant) return;
     const res = await fetch(`/api/grupos/${grupoId}/participantes/${editingParticipant.id}`, {
