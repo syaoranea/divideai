@@ -47,6 +47,8 @@ export interface Grupo {
   imovelEscolhido: Imovel | null;
   imoveisEmVotacao: ImovelEmVotacao[];
   votos: { participanteId: string; imovelId: string }[];
+  /** preenchido pela API quando quem acessa é um convidado (link ou telefone) */
+  meuParticipanteId?: string | null;
 }
 
 type Acesso = 'carregando' | 'liberado' | 'precisa-identificar' | 'nao-encontrado';
@@ -76,35 +78,61 @@ export function useGrupo() {
 }
 
 const phoneKey = (grupoId: string) => `guest_phone_${grupoId}`;
+const tokenKey = (grupoId: string) => `guest_token_${grupoId}`;
 const soDigitos = (v?: string | null) => (v ?? '').replace(/\D/g, '');
+
+function lerStorage(chave: string) {
+  try {
+    return localStorage.getItem(chave);
+  } catch {
+    return null;
+  }
+}
+
+/** Chamado pela página do link pessoal (/c/[token]) */
+export function salvarTokenConvidado(grupoId: string, token: string) {
+  try {
+    localStorage.setItem(tokenKey(grupoId), token);
+  } catch {
+    // navegador sem storage: o link continua funcionando, só não lembra depois
+  }
+}
 
 export function GrupoProvider({ grupoId, children }: { grupoId: string; children: React.ReactNode }) {
   const { data: session, status: authStatus } = useSession() || {};
+  const [guestToken, setGuestToken] = useState<string | null>(null);
   const [guestPhone, setGuestPhone] = useState<string | null>(null);
-  const [phoneLido, setPhoneLido] = useState(false);
+  const [storageLido, setStorageLido] = useState(false);
   const [grupo, setGrupo] = useState<Grupo | null>(null);
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
   const [acesso, setAcesso] = useState<Acesso>('carregando');
 
   useEffect(() => {
-    setGuestPhone(localStorage.getItem(phoneKey(grupoId)));
-    setPhoneLido(true);
+    setGuestToken(lerStorage(tokenKey(grupoId)));
+    setGuestPhone(lerStorage(phoneKey(grupoId)));
+    setStorageLido(true);
   }, [grupoId]);
 
   const apiFetch = useCallback(
     (url: string, init: RequestInit = {}) => {
       const headers = new Headers(init.headers);
-      if (guestPhone) headers.set('x-guest-phone', guestPhone);
+      if (guestToken) headers.set('x-guest-token', guestToken);
+      else if (guestPhone) headers.set('x-guest-phone', guestPhone);
       return fetch(url, { ...init, headers });
     },
-    [guestPhone]
+    [guestToken, guestPhone]
   );
 
   const refresh = useCallback(async () => {
     try {
       const res = await apiFetch(`/api/grupos/${grupoId}`);
       if (res.status === 401 || res.status === 403) {
-        if (guestPhone) localStorage.removeItem(phoneKey(grupoId));
+        // Link ou telefone que não valem mais: esquece e pede para se identificar
+        try {
+          localStorage.removeItem(tokenKey(grupoId));
+          localStorage.removeItem(phoneKey(grupoId));
+        } catch {}
+        setGuestToken(null);
         setAcesso('precisa-identificar');
         return;
       }
@@ -118,7 +146,7 @@ export function GrupoProvider({ grupoId, children }: { grupoId: string; children
       console.error('Error fetching grupo:', error);
       setAcesso('nao-encontrado');
     }
-  }, [apiFetch, grupoId, guestPhone]);
+  }, [apiFetch, grupoId]);
 
   const refreshPagamentos = useCallback(async () => {
     try {
@@ -131,17 +159,17 @@ export function GrupoProvider({ grupoId, children }: { grupoId: string; children
     }
   }, [apiFetch, grupoId]);
 
-  const identificado = authStatus === 'authenticated' || !!guestPhone;
+  const identificado = authStatus === 'authenticated' || !!guestToken || !!guestPhone;
 
   useEffect(() => {
-    if (authStatus === 'loading' || !phoneLido) return;
+    if (authStatus === 'loading' || !storageLido) return;
     if (!identificado) {
       setAcesso('precisa-identificar');
       return;
     }
     refresh();
     refreshPagamentos();
-  }, [authStatus, phoneLido, identificado, refresh, refreshPagamentos]);
+  }, [authStatus, storageLido, identificado, refresh, refreshPagamentos]);
 
   const entrarComTelefone = useCallback(
     (phone: string) => {
@@ -173,11 +201,13 @@ export function GrupoProvider({ grupoId, children }: { grupoId: string; children
       acesso,
       tema,
       isOrganizer: !!userId && grupo?.organizador?.id === userId,
-      myParticipant: participantes.find(
-        (p) =>
-          (userEmail && p.emailParticipante === userEmail) ||
-          (guestPhone && soDigitos(p.telefoneParticipante) === soDigitos(guestPhone))
-      ),
+      myParticipant: grupo?.meuParticipanteId
+        ? participantes.find((p) => p.id === grupo.meuParticipanteId)
+        : participantes.find(
+            (p) =>
+              (userEmail && p.emailParticipante === userEmail) ||
+              (guestPhone && soDigitos(p.telefoneParticipante) === soDigitos(guestPhone))
+          ),
       confirmados: participantes.filter((p) => p.statusParticipacao === 'CONFIRMADO'),
       apiFetch,
       refresh,

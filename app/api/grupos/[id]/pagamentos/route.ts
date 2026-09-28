@@ -4,30 +4,14 @@ import { authOptions } from '@/lib/auth';
 import { groupService } from '@/lib/services/groupService';
 import { participantService } from '@/lib/services/participantService';
 import { paymentService } from '@/lib/services/paymentService';
+import { resolverAcesso } from '@/lib/acesso';
 
 export const dynamic = 'force-dynamic';
 
-async function isGuestOfGroup(groupId: string, guestPhone: string) {
-  const participants = await participantService.getParticipantsByGroupId(groupId);
-  const gPhone = guestPhone.replace(/\D/g, '');
-  if (!gPhone) return false;
-  return participants.some((p) => (p.telefoneParticipante?.replace(/\D/g, '') || '') === gPhone);
-}
-
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
-    const session = await getServerSession(authOptions);
-    const guestPhone = req.headers.get('x-guest-phone');
-
-    if (!session?.user && !guestPhone) {
+    if (!(await resolverAcesso(req, params.id))) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    }
-
-    if (!session?.user && guestPhone && !(await isGuestOfGroup(params.id, guestPhone))) {
-      return NextResponse.json(
-        { error: 'Acesso negado: telefone não encontrado no grupo' },
-        { status: 403 }
-      );
     }
 
     const pagamentos = await paymentService.getPaymentsByGroupId(params.id);

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { participantService, StatusParticipacao } from '@/lib/services/participantService';
 import { groupService } from '@/lib/services/groupService';
 import { db } from '@/lib/firebaseAdmin';
+import { gerarToken } from '@/lib/acesso';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,11 +47,13 @@ export async function POST(
       telefoneParticipante,
       statusParticipacao: (statusParticipacao as StatusParticipacao) ?? StatusParticipacao.PENDENTE,
       valorPago: 0,
+      tokenAcesso: gerarToken(),
     });
 
     await participantService.recalculateIndividualValues(params.id);
 
-    return NextResponse.json(participante);
+    const { tokenAcesso, ...semToken } = participante;
+    return NextResponse.json(semToken);
   } catch (error) {
     console.error('Error adding participante:', error);
     return NextResponse.json({ error: 'Erro ao adicionar participante' }, { status: 500 });

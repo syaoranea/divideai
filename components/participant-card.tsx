@@ -12,6 +12,8 @@ interface ParticipantCardProps {
   valorPago?: number;
   onClick?: () => void;
   showValue?: boolean;
+  /** conteúdo extra no rodapé do card (ex.: botões do link pessoal) */
+  children?: React.ReactNode;
 }
 
 export function ParticipantCard({
@@ -23,6 +25,7 @@ export function ParticipantCard({
   valorPago = 0,
   onClick,
   showValue = true,
+  children,
 }: ParticipantCardProps) {
   const statusConfig = {
     CONFIRMADO: {
@@ -111,6 +114,8 @@ export function ParticipantCard({
           )}
         </div>
       )}
+
+      {children}
 
       {onClick && (
         <div className="mt-2 pt-2 border-t border-gray-200/50 text-center">

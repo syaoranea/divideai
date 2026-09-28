@@ -107,7 +107,10 @@ export const groupService = {
 
     // Fetch participants
     const participantsSnapshot = await db.collection('participants').where('grupoId', '==', groupId).get();
-    const participants = participantsSnapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+    const participants = participantsSnapshot.docs.map((doc: any) => {
+      const { tokenAcesso, ...data } = doc.data();
+      return { id: doc.id, ...data };
+    });
 
     // Fetch chosen property if any
     let imovelEscolhido = null;

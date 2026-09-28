@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { votingService } from '@/lib/services/votingService';
 import { participantService, StatusParticipacao } from '@/lib/services/participantService';
 import { propertyService } from '@/lib/services/propertyService';
+import { resolverAcesso } from '@/lib/acesso';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,15 +11,17 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    const guestPhone = req.headers.get('x-guest-phone');
-    
-    if (!session?.user && !guestPhone) {
+    const acesso = await resolverAcesso(req, params.id);
+
+    if (!acesso) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
     const body = await req.json();
-    const { participanteId, imovelId } = body ?? {};
+    const { imovelId } = body ?? {};
+    // Convidado só vota por si mesmo; usuário logado informa o participante
+    const participanteId =
+      acesso.tipo === 'convidado' ? acesso.participante.id : body?.participanteId;
 
     if (!participanteId || !imovelId) {
       return NextResponse.json(
@@ -29,16 +30,11 @@ export async function POST(
       );
     }
 
-    // Verify participant is confirmed and matches the guest phone if provided
     const participants = await participantService.getParticipantsByGroupId(params.id);
     const targetParticipant = participants.find(p => p.id === participanteId);
 
     if (!targetParticipant) {
       return NextResponse.json({ error: 'Participante não encontrado' }, { status: 404 });
-    }
-
-    if (!session?.user && guestPhone && targetParticipant.telefoneParticipante?.replace(/\D/g, '') !== guestPhone.replace(/\D/g, '')) {
-      return NextResponse.json({ error: 'Não autorizado: telefone pesquisado não confere' }, { status: 403 });
     }
 
     if (targetParticipant.statusParticipacao !== StatusParticipacao.CONFIRMADO) {

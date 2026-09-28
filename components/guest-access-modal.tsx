@@ -63,9 +63,9 @@ export function GuestAccessModal({ isOpen, grupoId, onSuccess }: GuestAccessModa
           <div className="w-16 h-16 bg-brand-100 rounded-2xl flex items-center justify-center mb-4">
             <Lock size={32} className="text-brand-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Acesso ao Grupo</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Quem é você?</h2>
           <p className="text-gray-600">
-            Informe seu número de telefone cadastrado no grupo para visualizar os detalhes.
+            O jeito mais fácil é abrir o link pessoal que você recebeu no WhatsApp. Se não tiver, informe o telefone cadastrado no grupo.
           </p>
         </div>
 
@@ -113,7 +113,7 @@ export function GuestAccessModal({ isOpen, grupoId, onSuccess }: GuestAccessModa
         </form>
 
         <p className="mt-8 text-center text-sm text-gray-500 italic">
-          Acesso restrito para visualização. Funcionalidades de edição requerem login completo.
+          Perdeu o link? Peça um novo para quem está organizando.
         </p>
       </motion.div>
     </div>

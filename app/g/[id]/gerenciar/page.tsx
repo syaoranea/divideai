@@ -10,6 +10,7 @@ import { EditParticipantModal } from '@/components/edit-participant-modal';
 import { EditGroupModal } from '@/components/edit-group-modal';
 import { AddPaymentModal } from '@/components/add-payment-modal';
 import { PaymentHistoryTable } from '@/components/payment-history-table';
+import { LinkPessoal } from '@/components/link-pessoal';
 import { useGrupo, formatarDataEvento, brl, type Participante } from '@/lib/grupo-context';
 
 export default function GerenciarPage() {
@@ -133,7 +134,15 @@ export default function GerenciarPage() {
               valorIndividual={p.valorIndividual}
               valorPago={p.valorPago ?? 0}
               onClick={() => setEditingParticipant(p)}
-            />
+            >
+              <LinkPessoal
+                grupoId={grupoId}
+                grupoNome={grupo.nome}
+                participanteId={p.id}
+                nome={p.nomeParticipante ?? ''}
+                telefone={p.telefoneParticipante ?? ''}
+              />
+            </ParticipantCard>
           ))}
         </div>
       </section>

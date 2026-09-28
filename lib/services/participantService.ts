@@ -16,6 +16,7 @@ export interface Participant {
   statusParticipacao: StatusParticipacao;
   valorIndividual?: number;
   valorPago: number;
+  tokenAcesso?: string;
   createdAt: Date;
 }
 
@@ -23,7 +24,8 @@ export const participantService = {
   async getParticipantsByGroupId(groupId: string): Promise<Participant[]> {
     const snapshot = await db.collection('participants').where('grupoId', '==', groupId).get();
     return snapshot.docs.map((doc: any) => {
-      const data = doc.data();
+      // O token do link pessoal nunca sai daqui: só é lido por lib/acesso.ts
+      const { tokenAcesso, ...data } = doc.data();
       return {
         id: doc.id,
         ...data,

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { groupService } from '@/lib/services/groupService';
 import { normalizarTema } from '@/lib/temas';
+import { resolverAcesso } from '@/lib/acesso';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,11 +12,14 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    const guestPhone = req.headers.get('x-guest-phone');
-    
-    if (!session?.user && !guestPhone) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    const acesso = await resolverAcesso(req, params.id);
+
+    if (!acesso) {
+      const tentouConvidado = req.headers.has('x-guest-token') || req.headers.has('x-guest-phone');
+      return NextResponse.json(
+        { error: tentouConvidado ? 'Acesso negado' : 'Não autorizado' },
+        { status: tentouConvidado ? 403 : 401 }
+      );
     }
 
     const grupo = await groupService.getGroupWithDetails(params.id);
@@ -24,19 +28,11 @@ export async function GET(
       return NextResponse.json({ error: 'Grupo não encontrado' }, { status: 404 });
     }
 
-    // Se não estiver logado, verifica se o telefone de convidado é de um participante do grupo
-    if (!session?.user && guestPhone) {
-      const isParticipant = grupo.participantes.some((p: any) => {
-        const pPhone = p.telefoneParticipante?.replace(/\D/g, '') || '';
-        const gPhone = guestPhone.replace(/\D/g, '') || '';
-        return pPhone === gPhone && pPhone !== '';
-      });
-      if (!isParticipant) {
-        return NextResponse.json({ error: 'Acesso negado: telefone não encontrado no grupo' }, { status: 403 });
-      }
-    }
-
-    return NextResponse.json(grupo);
+    // Diz ao navegador quem é o convidado, para o app saber "minha parte" e "meu voto"
+    return NextResponse.json({
+      ...grupo,
+      meuParticipanteId: acesso.tipo === 'convidado' ? acesso.participante.id : null,
+    });
   } catch (error) {
     console.error('Error fetching grupo:', error);
     return NextResponse.json({ error: 'Erro ao buscar grupo' }, { status: 500 });
